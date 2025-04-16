@@ -10,18 +10,14 @@ class ChessPiece extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      child: Center(
-        child: Text(
-          _getPieceSymbol(),
-          style: TextStyle(
-            fontSize: 32,
-            color:
-                piece.color == PieceColor.white ? Colors.black : Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
+    return Center(
+      child: Text(
+        _getPieceSymbol(),
+        style: TextStyle(
+          fontSize: 32,
+          color:
+              piece.color == PieceColor.white ? Colors.black : Colors.black87,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );

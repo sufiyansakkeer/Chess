@@ -11,10 +11,6 @@ import '../domain/value_objects/piece_color.dart';
 import '../domain/value_objects/piece_type.dart';
 import '../domain/value_objects/position.dart';
 
-// Import necessary classes
-import '../domain/entities/pieces/king.dart';
-import '../domain/entities/pieces/pawn.dart'; // Make sure Pawn is imported
-
 class GameStateImpl extends ChangeNotifier implements GameState {
   late List<List<PieceEntity?>> _board;
   late PieceColor _currentTurn;

@@ -42,7 +42,11 @@ class ChessBoard extends StatelessWidget {
                           ),
                         ),
                         if (piece != null)
-                          Center(child: ChessPiece(piece: piece)),
+                          AnimatedPositioned(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            child: Center(child: ChessPiece(piece: piece)),
+                          ),
                         if (isValidMove) _buildMoveIndicator(piece != null),
                       ],
                     ),

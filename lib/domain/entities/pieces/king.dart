@@ -1,4 +1,3 @@
-import '../../value_objects/piece_color.dart';
 import '../../value_objects/piece_type.dart';
 import '../../value_objects/position.dart';
 import '../piece_entity.dart';
