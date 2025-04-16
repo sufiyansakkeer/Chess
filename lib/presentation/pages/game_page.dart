@@ -26,28 +26,45 @@ class GamePage extends StatelessWidget {
         ),
         body: SingleChildScrollView(
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Consumer<GamePresenter>(
-                  builder: (context, presenter, _) {
-                    if (presenter.isGameOver) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          presenter.winner != null
-                              ? '${presenter.winner} wins!'
-                              : 'Game Over - Draw!',
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Consumer<GamePresenter>(
+                      builder: (context, presenter, _) {
+                        if (presenter.isGameOver) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              presenter.winner != null
+                                  ? '${presenter.winner} wins!'
+                                  : 'Game Over - Draw!',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                          );
+                        }
+                        return const SizedBox(height: 16);
+                      },
+                    ),
+                    Consumer<GamePresenter>(
+                      builder:
+                          (context, presenter, _) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              'Current Turn: ${presenter.currentTurn.toString().split('.').last.toUpperCase()}',
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    const ChessBoard(),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                const ChessBoard(),
-              ],
+              ),
             ),
           ),
         ),

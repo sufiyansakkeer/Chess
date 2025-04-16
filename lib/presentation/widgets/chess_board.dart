@@ -29,10 +29,22 @@ class ChessBoard extends StatelessWidget {
                   final isValidMove = presenter.validMoves.contains(position);
 
                   return GestureDetector(
-                    onTap: () => presenter.selectPosition(position),
-                    child: Container(
-                      color: _getSquareColor(row, col, isSelected, isValidMove),
-                      child: piece != null ? ChessPiece(piece: piece) : null,
+                    key: ValueKey('square_${row}_$col'),
+                    onTap: () => presenter.selectPosition(context, position),
+                    child: Stack(
+                      children: [
+                        Container(
+                          color: _getSquareColor(
+                            row,
+                            col,
+                            isSelected,
+                            isValidMove,
+                          ),
+                        ),
+                        if (piece != null)
+                          Center(child: ChessPiece(piece: piece)),
+                        if (isValidMove) _buildMoveIndicator(piece != null),
+                      ],
                     ),
                   );
                 }),
@@ -49,6 +61,26 @@ class ChessBoard extends StatelessWidget {
     if (isValidMove) {
       return Colors.green.withOpacity(0.3);
     }
-    return ((row + col) % 2 == 0) ? Colors.white : Colors.grey;
+    return ((row + col) % 2 == 0) ? Colors.white : Colors.grey.shade400;
+  }
+
+  Widget _buildMoveIndicator(bool isCapture) {
+    return Center(
+      child: Container(
+        width: isCapture ? 40 : 20,
+        height: isCapture ? 40 : 20,
+        decoration: BoxDecoration(
+          color:
+              isCapture
+                  ? Colors.red.withOpacity(0.3)
+                  : Colors.green.withOpacity(0.3),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: isCapture ? Colors.red : Colors.green,
+            width: 2,
+          ),
+        ),
+      ),
+    );
   }
 }
