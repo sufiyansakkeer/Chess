@@ -36,7 +36,7 @@ class GamePage extends StatelessWidget {
                   children: [
                     Consumer<GamePresenter>(
                       builder: (context, presenter, _) {
-                        if (presenter.isGameOver) {
+                        if (presenter.gameState.isGameOver) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
@@ -46,13 +46,7 @@ class GamePage extends StatelessWidget {
                               style: Theme.of(context).textTheme.headlineMedium,
                             ),
                           );
-                        }
-                        return const SizedBox(height: 16);
-                      },
-                    ),
-                    Consumer<GamePresenter>(
-                      builder: (context, presenter, _) {
-                        if (presenter.gameState.isKingInCheck) {
+                        } else if (presenter.gameState.isKingInCheck) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
@@ -79,6 +73,20 @@ class GamePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     const ChessBoard(),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 200,
+                      child: Consumer<GamePresenter>(
+                        builder: (context, presenter, _) {
+                          return ListView.builder(
+                            itemCount: presenter.moveHistory.length,
+                            itemBuilder: (context, index) {
+                              return Text(presenter.moveHistory[index]);
+                            },
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),

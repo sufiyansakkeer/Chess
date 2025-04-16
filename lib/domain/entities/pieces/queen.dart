@@ -7,7 +7,10 @@ class Queen extends PieceEntity {
     : super(type: PieceType.queen);
 
   @override
-  List<Position> getPossibleMoves(List<List<PieceEntity?>> board) {
+  List<Position> getPossibleMoves(
+    List<List<PieceEntity?>> board, [
+    Position? enPassantTarget,
+  ]) {
     List<Position> moves = [];
     final directions = [
       [-1, -1], [-1, 0], [-1, 1], // top left, top, top right
@@ -39,6 +42,14 @@ class Queen extends PieceEntity {
     }
 
     return moves;
+  }
+
+  @override
+  List<Position> getRawPossibleMoves(
+    List<List<PieceEntity?>> board, [
+    Position? enPassantTarget,
+  ]) {
+    return getPossibleMoves(board, enPassantTarget);
   }
 
   @override

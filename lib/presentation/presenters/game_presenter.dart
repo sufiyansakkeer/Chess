@@ -20,6 +20,7 @@ class GamePresenter extends ChangeNotifier {
   String? get winner => _gameState.winner?.toString();
   Position? get selectedPosition => _selectedPosition;
   List<Position> get validMoves => _validMoves;
+  List<String> get moveHistory => _gameState.getMoveHistory();
 
   Future<PieceType?> showPromotionDialog(BuildContext context) async {
     return showDialog<PieceType>(

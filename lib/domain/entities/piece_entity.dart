@@ -15,7 +15,10 @@ abstract class PieceEntity {
     this.hasMoved = false,
   });
 
-  List<Position> getPossibleMoves(List<List<PieceEntity?>> board);
+  List<Position> getPossibleMoves(
+    List<List<PieceEntity?>> board, [
+    Position? enPassantTarget,
+  ]);
 
   bool isValidMove(Position target, List<List<PieceEntity?>> board) {
     return getPossibleMoves(board).any((pos) => pos == target);

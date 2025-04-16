@@ -28,12 +28,18 @@ void main() {
   testWidgets('Check message is displayed when king is in check', (
     WidgetTester tester,
   ) async {
-    // Build the GamePage widget
-    await tester.pumpWidget(MaterialApp(home: GamePage()));
+    // Build the GamePage widget with a GamePresenter
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChangeNotifierProvider(
+          create: (context) => GamePresenter(GameStateImpl()),
+          child: GamePage(),
+        ),
+      ),
+    );
 
-    // Get the GamePresenter instance from the widget tree
+    // Get the GamePresenter instance from the widget tree using Provider.of
     final gamePageFinder = find.byType(GamePage);
-    final gamePageWidget = tester.widget<GamePage>(gamePageFinder);
     final gamePresenter = Provider.of<GamePresenter>(
       tester.element(gamePageFinder),
       listen: false,

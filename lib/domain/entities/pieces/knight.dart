@@ -7,7 +7,10 @@ class Knight extends PieceEntity {
     : super(type: PieceType.knight);
 
   @override
-  List<Position> getPossibleMoves(List<List<PieceEntity?>> board) {
+  List<Position> getPossibleMoves(
+    List<List<PieceEntity?>> board, [
+    Position? enPassantTarget,
+  ]) {
     List<Position> moves = [];
     final movesOffsets = [
       [-2, -1], [-2, 1], // Up 2, left/right 1

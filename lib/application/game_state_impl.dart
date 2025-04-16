@@ -22,6 +22,7 @@ class GameStateImpl extends ChangeNotifier implements GameState {
   // Store the position *behind* the pawn that just moved two squares,
   // representing the square a capturing pawn would move *to*.
   Position? _enPassantTargetSquare;
+  final List<String> _moveHistory = [];
 
   GameStateImpl() {
     reset();
@@ -146,6 +147,12 @@ class GameStateImpl extends ChangeNotifier implements GameState {
   // Add optional promotionType parameter and remove movePieceWithPromotion
   bool movePiece(Position from, Position to, [PieceType? promotionType]) {
     final piece = _board[from.row][from.col];
+    String moveNotation = _convertToAlgebraicNotation(
+      from,
+      to,
+      piece,
+      promotionType,
+    );
     // Basic validation
     if (piece == null || piece.color != _currentTurn) {
       // print("Invalid move: No piece at $from or wrong turn ($_currentTurn).");
@@ -181,9 +188,18 @@ class GameStateImpl extends ChangeNotifier implements GameState {
           to.row + (piece.color == PieceColor.white ? 1 : -1);
       enPassantCaptureSquare = Position(capturedPawnRow, to.col);
       if (enPassantCaptureSquare.isValid()) {
-        // print("En passant capture: Removing pawn at $enPassantCaptureSquare");
-        _board[enPassantCaptureSquare.row][enPassantCaptureSquare.col] =
-            null; // Remove the captured pawn
+        // Check if there is actually a pawn to capture at the calculated square
+        if (_board[enPassantCaptureSquare.row][enPassantCaptureSquare.col]
+            is Pawn) {
+          // print("En passant capture: Removing pawn at $enPassantCaptureSquare");
+          _board[enPassantCaptureSquare.row][enPassantCaptureSquare.col] =
+              null; // Remove the captured pawn
+        } else {
+          // This case should ideally not happen if enPassantTarget was set correctly
+          print(
+            "Warning: No pawn found at calculated en passant capture square: $enPassantCaptureSquare",
+          );
+        }
       } else {
         // This case should ideally not happen if enPassantTarget was set correctly
         // print("Warning: Invalid en passant capture square calculated: $enPassantCaptureSquare");
@@ -253,6 +269,7 @@ class GameStateImpl extends ChangeNotifier implements GameState {
     }
 
     _currentTurn = opponentColor; // Switch turn
+    _moveHistory.add(moveNotation);
     notifyListeners();
     // print("Move successful: ${piece.type} from $from to $to. Turn: $_currentTurn");
     return true;
@@ -347,8 +364,10 @@ class GameStateImpl extends ChangeNotifier implements GameState {
         isKingside ? 5 : 3; // Rook destination column (f file or d file)
 
     final rook = _board[row][rookFromCol];
-    if (rook != null && rook.type == PieceType.rook) {
-      // Check type for safety
+    if (rook != null &&
+        rook.type == PieceType.rook &&
+        _board[row][rookFromCol] == rook) {
+      // Check type for safety and that the rook is actually at the expected position
       _board[row][rookToCol] = rook.copyWith(
         position: Position(row, rookToCol),
         hasMoved: true, // Mark rook as moved
@@ -400,12 +419,18 @@ class GameStateImpl extends ChangeNotifier implements GameState {
 
   // Is the king of the specified color currently under attack?
   bool _isInCheck(PieceColor color) {
+    print('_isInCheck called for color: $color');
     Position? kingPosition = _findKing(color);
     if (kingPosition == null) {
-      // print("Error: King of color $color not found! Cannot determine check status.");
+      print(
+        'Error: King of color $color not found! Cannot determine check status.',
+      );
       return false; // Cannot be in check if king doesn't exist (indicates error state)
     }
-    return _isSquareUnderAttack(kingPosition, color, _board);
+    print('King position: $kingPosition');
+    final result = _isSquareUnderAttack(kingPosition, color, _board);
+    print('King is in check: $result');
+    return result;
   }
 
   // Checks if a square (targetPos) is attacked by the opponent of the targetColor
@@ -415,11 +440,16 @@ class GameStateImpl extends ChangeNotifier implements GameState {
     PieceColor targetColor,
     List<List<PieceEntity?>> board,
   ) {
+    print(
+      '_isSquareUnderAttack called for targetPos: $targetPos, targetColor: $targetColor',
+    );
     final attackerColor = _getOppositeColor(targetColor);
+    print('Attacker color: $attackerColor');
     for (int r = 0; r < 8; r++) {
       for (int c = 0; c < 8; c++) {
         final piece = board[r][c];
         if (piece != null && piece.color == attackerColor) {
+          print('Found attacker: ${piece.type} at ($r, $c)');
           // Use raw possible moves from the piece logic.
           // Pass enPassantTarget only if the piece is a Pawn.
           final attackMoves =
@@ -431,13 +461,19 @@ class GameStateImpl extends ChangeNotifier implements GameState {
                   : piece.getPossibleMoves(
                     board,
                   ); // Other pieces don't need enPassantTarget
+          print(
+            'Possible attack moves: ${attackMoves.map((p) => '(${p.row}, ${p.col})').join(', ')}',
+          );
           if (attackMoves.contains(targetPos)) {
-            // print("Square ($targetPos.row, $targetPos.col) is under attack by ${piece.type} at ($r, $c)");
+            print(
+              "Square ($targetPos.row, $targetPos.col) is under attack by ${piece.type} at ($r, $c)",
+            );
             return true;
           }
         }
       }
     }
+    print('Square $targetPos is not under attack');
     return false;
   }
 
@@ -559,5 +595,63 @@ class GameStateImpl extends ChangeNotifier implements GameState {
     sb.write('Turn: $_currentTurn\n');
     sb.write('En Passant Target: $_enPassantTargetSquare\n');
     return sb.toString();
+  }
+
+  String _convertToAlgebraicNotation(
+    Position from,
+    Position to,
+    PieceEntity? piece,
+    PieceType? promotionType,
+  ) {
+    String notation = '';
+
+    if (piece != null) {
+      if (piece is Pawn) {
+        // Pawns don't have a piece identifier unless capturing
+        if (_board[to.row][to.col] != null) {
+          notation += String.fromCharCode(from.col + 97); // File of origin
+        }
+      } else {
+        notation += piece.type.toString().split('.').last[0].toUpperCase();
+        if (piece.type == PieceType.knight) notation = 'N';
+      }
+    }
+
+    // Indicate capture
+    if (_board[to.row][to.col] != null) {
+      notation += 'x';
+    }
+
+    // Destination square
+    notation += String.fromCharCode(to.col + 97); // File
+    notation += (8 - to.row).toString(); // Rank
+
+    // Indicate promotion
+    if (promotionType != null) {
+      notation +=
+          '=${promotionType.toString().split('.').last[0].toUpperCase()}';
+      if (promotionType == PieceType.knight) notation = 'T';
+    }
+
+    return notation;
+  }
+
+  @override
+  List<String> getMoveHistory() {
+    return List.from(_moveHistory);
+  }
+
+  @override
+  bool isCheckmate(PieceColor color) {
+    // Checkmate if currently in check AND has no valid moves
+    if (!_isInCheck(color)) return false;
+    return !_hasAnyValidMoves(color);
+  }
+
+  @override
+  bool isStalemate(PieceColor color) {
+    // Stalemate if NOT in check AND has no valid moves
+    if (_isInCheck(color)) return false;
+    return !_hasAnyValidMoves(color);
   }
 }

@@ -40,6 +40,14 @@ class King extends PieceEntity {
     return moves;
   }
 
+  @override
+  List<Position> getRawPossibleMoves(
+    List<List<PieceEntity?>> board, [
+    Position? enPassantTarget,
+  ]) {
+    return getPossibleMoves(board, enPassantTarget);
+  }
+
   // Removed _canCastleKingside, _canCastleQueenside, _isInCheck, _isSquareUnderDirectAttack
   // as this logic is now centralized in GameStateImpl
 

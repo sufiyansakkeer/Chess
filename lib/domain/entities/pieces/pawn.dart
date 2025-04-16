@@ -82,6 +82,14 @@ class Pawn extends PieceEntity {
     return moves;
   }
 
+  @override
+  List<Position> getRawPossibleMoves(
+    List<List<PieceEntity?>> board, [
+    Position? enPassantTarget,
+  ]) {
+    return getPossibleMoves(board, enPassantTarget);
+  }
+
   // Remove isEnPassantEligible from copyWith as it's now managed by GameStateImpl._enPassantTargetSquare
   @override
   PieceEntity copyWith({

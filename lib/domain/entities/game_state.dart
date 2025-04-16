@@ -19,4 +19,5 @@ abstract class GameState {
   //   PieceType promotionType,
   // );
   void reset();
+  List<String> getMoveHistory();
 }

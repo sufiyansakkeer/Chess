@@ -129,7 +129,7 @@ void main() {
       // Clear pieces between king and rook
       gameState.board[7][5] = null;
       gameState.board[7][6] = null;
-      // Place enemy queen to attack castling square
+      // Place enemy queen to put king in check
       gameState.board[6][5] = Queen(
         color: PieceColor.black,
         position: Position(6, 5),
@@ -226,15 +226,25 @@ void main() {
       isTrue,
     ); // W Ke2
     expect(
-      gameState.movePiece(Position(0, 0), Position(0, 0)),
+      gameState.movePiece(
+        Position(1, 4),
+        Position(2, 4),
+      ), // Use valid black move
       isTrue,
-    ); // B dummy move
+    ); // B e6
     expect(
       gameState.movePiece(Position(6, 4), Position(7, 4)),
       isTrue,
     ); // W Ke1
+    expect(
+      gameState.movePiece(
+        Position(1, 5),
+        Position(2, 5),
+      ), // Add another valid black move
+      isTrue,
+    ); // B f6
 
-    // Try to castle kingside (should fail)
+    // Try to castle kingside (should fail because king moved)
     expect(gameState.movePiece(Position(7, 4), Position(7, 6)), isFalse);
   });
 
@@ -247,15 +257,25 @@ void main() {
       isTrue,
     ); // W Rh2
     expect(
-      gameState.movePiece(Position(0, 0), Position(0, 0)),
+      gameState.movePiece(
+        Position(1, 4),
+        Position(2, 4),
+      ), // Use valid black move
       isTrue,
-    ); // B dummy move
+    ); // B e6
     expect(
       gameState.movePiece(Position(6, 7), Position(7, 7)),
       isTrue,
     ); // W Rh1
+    expect(
+      gameState.movePiece(
+        Position(1, 5),
+        Position(2, 5),
+      ), // Add another valid black move
+      isTrue,
+    ); // B f6
 
-    // Try to castle kingside (should fail)
+    // Try to castle kingside (should fail because rook moved)
     expect(gameState.movePiece(Position(7, 4), Position(7, 6)), isFalse);
   });
 
@@ -531,6 +551,185 @@ void main() {
       ); // Blocking pawn
 
       expect(gameState.isKingInCheck, isFalse);
+    });
+  });
+
+  group('Move Validation - Same Color', () {
+    test(
+      'should not allow move to a square occupied by a piece of the same color',
+      () {
+        // Arrange
+        gameState.board[2][0] = Pawn(
+          color: PieceColor.white,
+          position: Position(2, 0),
+        );
+        gameState.board[3][0] = Pawn(
+          color: PieceColor.white,
+          position: Position(3, 0),
+        );
+
+        // Act
+        final from = Position(2, 0);
+        final to = Position(3, 0);
+        final result = gameState.movePiece(from, to);
+
+        // Assert
+        expect(result, isFalse);
+      },
+    );
+  });
+
+  group('Checkmate Detection', () {
+    test(
+      'should detect checkmate when king has no valid moves and is under attack',
+      () {
+        final gameState = GameStateImpl();
+        // Set up a checkmate scenario
+        gameState.board[7][4] = King(
+          color: PieceColor.white,
+          position: Position(7, 4),
+        );
+        gameState.board[7][5] = Rook(
+          color: PieceColor.white,
+          position: Position(7, 5),
+        );
+        gameState.board[0][4] = Queen(
+          color: PieceColor.black,
+          position: Position(0, 4),
+        );
+        gameState.board[0][5] = Rook(
+          color: PieceColor.black,
+          position: Position(0, 5),
+        );
+
+        expect(gameState.isCheckmate(PieceColor.white), isTrue);
+      },
+    );
+
+    test('should not detect checkmate when king has valid moves', () {
+      final gameState = GameStateImpl();
+      // Set up a scenario where the king is in check but has a valid move
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+      gameState.board[7][5] = Rook(
+        color: PieceColor.white,
+        position: Position(7, 5),
+      );
+      gameState.board[0][4] = Queen(
+        color: PieceColor.black,
+        position: Position(0, 4),
+      );
+
+      expect(gameState.isCheckmate(PieceColor.white), isFalse);
+    });
+
+    test('should detect checkmate with scholars mate', () {
+      final gameState = GameStateImpl();
+      // Initial setup
+      gameState.reset();
+
+      // White moves
+      gameState.movePiece(Position(6, 4), Position(4, 4)); // 1. e4
+      gameState.movePiece(Position(1, 4), Position(3, 4)); // 1... e5
+      gameState.movePiece(Position(7, 5), Position(2, 0)); // 2. Qh5
+      gameState.movePiece(Position(0, 6), Position(2, 7)); // 2... Nc6
+      gameState.movePiece(Position(7, 3), Position(3, 7)); // 3. Bc4
+      gameState.movePiece(Position(2, 0), Position(0, 6)); // 4. Qxf7#
+
+      // Black is now checkmated
+      expect(gameState.isCheckmate(PieceColor.black), isTrue);
+    });
+  });
+
+  group('Stalemate Detection', () {
+    test(
+      'should detect stalemate when king has no valid moves and is not in check',
+      () {
+        final gameState = GameStateImpl();
+        // Set up a stalemate scenario
+        gameState.board[7][4] = King(
+          color: PieceColor.white,
+          position: Position(7, 4),
+        );
+        gameState.board[7][6] = Pawn(
+          color: PieceColor.white,
+          position: Position(7, 6),
+        );
+        gameState.board[1][4] = Queen(
+          color: PieceColor.black,
+          position: Position(1, 4),
+        );
+        gameState.board[0][5] = Rook(
+          color: PieceColor.black,
+          position: Position(0, 5),
+        );
+        gameState.board[0][6] = Bishop(
+          color: PieceColor.black,
+          position: Position(0, 6),
+        );
+        gameState.board[1][7] = Knight(
+          color: PieceColor.black,
+          position: Position(1, 7),
+        );
+
+        expect(gameState.isStalemate(PieceColor.white), isTrue);
+      },
+    );
+
+    test('should not detect stalemate when king has valid moves', () {
+      final gameState = GameStateImpl();
+      // Set up a scenario where the king is not in check and has a valid move
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+      gameState.board[7][6] = Pawn(
+        color: PieceColor.white,
+        position: Position(7, 6),
+      );
+      gameState.board[1][4] = Queen(
+        color: PieceColor.black,
+        position: Position(1, 4),
+      );
+      gameState.board[0][5] = Rook(
+        color: PieceColor.black,
+        position: Position(0, 5),
+      );
+      gameState.board[0][6] = Bishop(
+        color: PieceColor.black,
+        position: Position(0, 6),
+      );
+
+      expect(gameState.isStalemate(PieceColor.white), isFalse);
+    });
+
+    test('should not detect stalemate when king is in check', () {
+      final gameState = GameStateImpl();
+      // Set up a scenario where the king is in check
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+      gameState.board[7][6] = Pawn(
+        color: PieceColor.white,
+        position: Position(7, 6),
+      );
+      gameState.board[1][4] = Queen(
+        color: PieceColor.black,
+        position: Position(1, 4),
+      );
+      gameState.board[0][5] = Rook(
+        color: PieceColor.black,
+        position: Position(0, 5),
+      );
+      gameState.board[0][4] = Bishop(
+        color: PieceColor.black,
+        position: Position(0, 4),
+      );
+
+      expect(gameState.isStalemate(PieceColor.white), isFalse);
     });
   });
 }

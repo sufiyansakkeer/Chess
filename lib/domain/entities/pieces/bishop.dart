@@ -7,7 +7,10 @@ class Bishop extends PieceEntity {
     : super(type: PieceType.bishop);
 
   @override
-  List<Position> getPossibleMoves(List<List<PieceEntity?>> board) {
+  List<Position> getPossibleMoves(
+    List<List<PieceEntity?>> board, [
+    Position? enPassantTarget,
+  ]) {
     List<Position> moves = [];
     final directions = [
       [-1, -1], // top-left
@@ -25,6 +28,7 @@ class Bishop extends PieceEntity {
         currentCol += direction[1];
 
         Position newPos = Position(currentRow, currentCol);
+        print("Bishop: Checking position: $newPos"); // Add logging
         if (!newPos.isValid()) break;
 
         var pieceAtPosition = board[currentRow][currentCol];
