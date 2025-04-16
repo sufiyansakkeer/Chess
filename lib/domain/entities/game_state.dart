@@ -8,6 +8,7 @@ abstract class GameState {
   PieceColor get currentTurn;
   bool get isGameOver;
   PieceColor? get winner;
+  bool get isKingInCheck;
   List<Position> getValidMovesForPiece(Position position);
   // Add optional promotionType parameter
   bool movePiece(Position from, Position to, [PieceType? promotionType]);

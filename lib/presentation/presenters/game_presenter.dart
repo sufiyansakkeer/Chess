@@ -13,6 +13,7 @@ class GamePresenter extends ChangeNotifier {
 
   GamePresenter(this._gameState);
 
+  GameState get gameState => _gameState;
   PieceColor get currentTurn => _gameState.currentTurn;
   List<List<PieceEntity?>> get board => _gameState.board;
   bool get isGameOver => _gameState.isGameOver;

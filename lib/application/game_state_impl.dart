@@ -41,6 +41,9 @@ class GameStateImpl extends ChangeNotifier implements GameState {
   PieceColor? get winner => _winner;
 
   @override
+  bool get isKingInCheck => _isInCheck(_currentTurn);
+
+  @override
   List<Position> getValidMovesForPiece(Position position) {
     final piece = _board[position.row][position.col];
     if (piece == null || piece.color != _currentTurn) return [];

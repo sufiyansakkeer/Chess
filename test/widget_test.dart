@@ -1,14 +1,14 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chess/main.dart';
 import 'package:chess/presentation/pages/game_page.dart';
+import 'package:chess/domain/entities/pieces/king.dart';
+import 'package:chess/domain/entities/pieces/queen.dart';
+import 'package:chess/domain/value_objects/piece_color.dart';
+import 'package:chess/domain/value_objects/position.dart';
+import 'package:chess/application/game_state_impl.dart';
+import 'package:provider/provider.dart';
+import 'package:chess/presentation/presenters/game_presenter.dart';
 
 void main() {
   testWidgets('Chess game initial layout test', (WidgetTester tester) async {
@@ -23,5 +23,37 @@ void main() {
 
     // Verify that the app title is displayed
     expect(find.text('Chess Game'), findsOneWidget);
+  });
+
+  testWidgets('Check message is displayed when king is in check', (
+    WidgetTester tester,
+  ) async {
+    // Build the GamePage widget
+    await tester.pumpWidget(MaterialApp(home: GamePage()));
+
+    // Get the GamePresenter instance from the widget tree
+    final gamePageFinder = find.byType(GamePage);
+    final gamePageWidget = tester.widget<GamePage>(gamePageFinder);
+    final gamePresenter = Provider.of<GamePresenter>(
+      tester.element(gamePageFinder),
+      listen: false,
+    );
+
+    // Simulate a state where the king is in check
+    gamePresenter.gameState.board[7][4] = King(
+      color: PieceColor.white,
+      position: Position(7, 4),
+    );
+    gamePresenter.gameState.board[5][4] = Queen(
+      color: PieceColor.black,
+      position: Position(5, 4),
+    );
+    gamePresenter.gameState.isKingInCheck;
+
+    // Force a rebuild of the widget tree
+    await tester.pump();
+
+    // Verify that the check message is displayed
+    expect(find.text('WHITE King is in CHECK!'), findsOneWidget);
   });
 }

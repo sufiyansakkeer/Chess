@@ -51,6 +51,23 @@ class GamePage extends StatelessWidget {
                       },
                     ),
                     Consumer<GamePresenter>(
+                      builder: (context, presenter, _) {
+                        if (presenter.gameState.isKingInCheck) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '${presenter.currentTurn.toString().split('.').last.toUpperCase()} King is in CHECK!',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          );
+                        }
+                        return const SizedBox(height: 16);
+                      },
+                    ),
+                    Consumer<GamePresenter>(
                       builder:
                           (context, presenter, _) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),

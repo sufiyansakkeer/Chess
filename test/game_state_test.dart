@@ -7,6 +7,8 @@ import 'package:chess/domain/entities/pieces/pawn.dart'; // Import Pawn
 import 'package:chess/domain/entities/pieces/queen.dart'; // Import Queen
 import 'package:chess/domain/entities/pieces/king.dart'; // Import King
 import 'package:chess/domain/entities/pieces/rook.dart'; // Import Rook
+import 'package:chess/domain/entities/pieces/bishop.dart'; // Import Bishop
+import 'package:chess/domain/entities/pieces/knight.dart'; // Import Knight
 
 void main() {
   late GameStateImpl gameState;
@@ -422,6 +424,113 @@ void main() {
       expect(gameState.movePiece(Position(6, 0), Position(5, 0)), isTrue);
       // Try en passant capture - should fail
       expect(gameState.movePiece(Position(3, 4), Position(2, 5)), isFalse);
+    });
+  });
+
+  group('Check Detection', () {
+    test('should detect check when king is under attack', () {
+      final gameState = GameStateImpl();
+      // Place white king and black queen to create a check situation
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+      gameState.board[5][4] = Queen(
+        color: PieceColor.black,
+        position: Position(5, 4),
+      );
+
+      expect(gameState.isKingInCheck, isTrue);
+    });
+
+    test('should not detect check when king is not under attack', () {
+      final gameState = GameStateImpl();
+      // Place white king without any attacking pieces
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+
+      expect(gameState.isKingInCheck, isFalse);
+    });
+
+    test('should detect check by knight', () {
+      final gameState = GameStateImpl();
+      // Place white king and black knight to create a check situation
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+      gameState.board[5][3] = Knight(
+        color: PieceColor.black,
+        position: Position(5, 3),
+      );
+
+      expect(gameState.isKingInCheck, isTrue);
+    });
+
+    test('should detect check by pawn', () {
+      final gameState = GameStateImpl();
+      // Place white king and black pawn to create a check situation
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+      gameState.board[6][3] = Pawn(
+        color: PieceColor.black,
+        position: Position(6, 3),
+      );
+
+      expect(gameState.isKingInCheck, isTrue);
+    });
+
+    test('should detect check by rook', () {
+      final gameState = GameStateImpl();
+      // Place white king and black rook to create a check situation
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+      gameState.board[7][0] = Rook(
+        color: PieceColor.black,
+        position: Position(7, 0),
+      );
+
+      expect(gameState.isKingInCheck, isTrue);
+    });
+
+    test('should detect check by bishop', () {
+      final gameState = GameStateImpl();
+      // Place white king and black bishop to create a check situation
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+      gameState.board[5][2] = Bishop(
+        color: PieceColor.black,
+        position: Position(5, 2),
+      );
+
+      expect(gameState.isKingInCheck, isTrue);
+    });
+
+    test('should not detect check when pieces are blocking', () {
+      final gameState = GameStateImpl();
+      // Place white king and black queen, but with a blocking piece
+      gameState.board[7][4] = King(
+        color: PieceColor.white,
+        position: Position(7, 4),
+      );
+      gameState.board[5][4] = Queen(
+        color: PieceColor.black,
+        position: Position(5, 4),
+      );
+      gameState.board[6][4] = Pawn(
+        color: PieceColor.white,
+        position: Position(6, 4),
+      ); // Blocking pawn
+
+      expect(gameState.isKingInCheck, isFalse);
     });
   });
 }
