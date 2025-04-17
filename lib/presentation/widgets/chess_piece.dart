@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../domain/entities/piece_entity.dart';
 import '../../domain/value_objects/piece_color.dart';
 import '../../domain/value_objects/piece_type.dart';
@@ -11,35 +12,25 @@ class ChessPiece extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(
-        _getPieceSymbol(),
-        style: TextStyle(
-          fontSize: 32,
-          color:
-              piece.color == PieceColor.white
-                  ? Theme.of(context).colorScheme.onSurface
-                  : Theme.of(context).colorScheme.onSurface,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+      child: SvgPicture.asset(_getPieceAsset(), height: 32, width: 32),
     );
   }
 
-  String _getPieceSymbol() {
-    final isWhite = piece.color == PieceColor.white;
+  String _getPieceAsset() {
+    final color = piece.color == PieceColor.white ? 'white' : 'black';
     switch (piece.type) {
       case PieceType.king:
-        return isWhite ? '♔' : '♚';
+        return 'assets/${color}_king.svg';
       case PieceType.queen:
-        return isWhite ? '♕' : '♛';
+        return 'assets/${color}_queen.svg';
       case PieceType.rook:
-        return isWhite ? '♖' : '♜';
+        return 'assets/${color}_rook.svg';
       case PieceType.bishop:
-        return isWhite ? '♗' : '♝';
+        return 'assets/${color}_bishop.svg';
       case PieceType.knight:
-        return isWhite ? '♘' : '♞';
+        return 'assets/${color}_knight.svg';
       case PieceType.pawn:
-        return isWhite ? '♙' : '♟';
+        return 'assets/${color}_pawn.svg';
     }
   }
 }
