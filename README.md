@@ -1,19 +1,27 @@
-# chess
+# Chess
 
-A new Flutter project.
+A Flutter-based chess game application with full chess rules implementation and clean architecture.
+
+![Image](https://github.com/user-attachments/assets/44a7bf12-c1e5-4d0e-8aaf-4d1273f1828b) <!-- Replace with actual screenshot when available -->
+
+## Features
+
+- Complete chess game with standard rules
+- Intuitive drag-and-drop interface
+- Support for special moves (castling, en passant, pawn promotion)
+- Turn management system
+- Check and checkmate detection
+- Game state tracking
+- Clean, layered architecture for maintainability
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Usage
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Tap on a piece to select it
+- Available moves will be highlighted on the board
+- Tap on a highlighted square to move the selected piece
+- The app will enforce chess rules and handle turn management automatically
 
 ## Architecture and Logic Documentation
 
@@ -49,3 +57,57 @@ The core game logic is implemented in the `GameStateImpl` class. It manages the 
 The `GamePage` interacts with the `GamePresenter` to handle user input, such as piece selections and move attempts. The `GamePresenter` then interacts with the `GameStateImpl` to update the game state. The `GameStateImpl` notifies the `GamePresenter` of any changes, which in turn updates the UI.
 
 This architecture ensures a clear separation of concerns, making the codebase easier to understand, maintain, and test.
+
+## Project Structure
+
+```
+lib/
+├── application/
+│   └── game_state_impl.dart
+├── domain/
+│   ├── entities/
+│   │   ├── game_state.dart
+│   │   ├── piece_entity.dart
+│   │   └── [specific pieces]
+│   └── value_objects/
+│       ├── position.dart
+│       ├── piece_color.dart
+│       └── piece_type.dart
+├── presentation/
+│   ├── pages/
+│   │   └── game_page.dart
+│   ├── presenters/
+│   │   └── game_presenter.dart
+│   └── widgets/
+│       ├── chess_board.dart
+│       └── chess_piece.dart
+└── main.dart
+```
+
+## Testing
+
+Run the tests with:
+
+```bash
+flutter test
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Resources
+
+For help getting started with Flutter development:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- [Flutter online documentation](https://docs.flutter.dev/)
