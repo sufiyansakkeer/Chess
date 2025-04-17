@@ -44,7 +44,6 @@ class Queen extends PieceEntity {
     return moves;
   }
 
-  @override
   List<Position> getRawPossibleMoves(
     List<List<PieceEntity?>> board, [
     Position? enPassantTarget,

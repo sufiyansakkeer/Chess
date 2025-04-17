@@ -34,12 +34,10 @@ class ChessApp extends StatelessWidget {
         return MaterialApp(
           navigatorKey: navigatorKey,
           title: 'Chess Game',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
+          theme: themeProvider.getThemeData().copyWith(
             brightness: Brightness.light,
           ),
-          darkTheme: ThemeData(
-            primarySwatch: Colors.blue,
+          darkTheme: themeProvider.getThemeData().copyWith(
             brightness: Brightness.dark,
           ),
           themeMode: themeProvider.themeMode,

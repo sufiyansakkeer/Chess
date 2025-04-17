@@ -34,6 +34,42 @@ class GamePage extends StatelessWidget {
                     onPressed: themeProvider.toggleTheme,
                   ),
             ),
+            Consumer<ThemeProvider>(
+              builder:
+                  (context, themeProvider, _) => PopupMenuButton<String>(
+                    icon: const Icon(Icons.palette),
+                    onSelected: (String style) {
+                      themeProvider.setThemeStyle(style);
+                    },
+                    itemBuilder:
+                        (BuildContext context) => [
+                          const PopupMenuItem(
+                            value: 'classic',
+                            child: Text('Classic'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'modern',
+                            child: Text('Modern'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'forest',
+                            child: Text('Forest'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'ocean',
+                            child: Text('Ocean'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'sunset',
+                            child: Text('Sunset'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'minimalist',
+                            child: Text('Minimalist'),
+                          ),
+                        ],
+                  ),
+            ),
           ],
         ),
         body: SingleChildScrollView(

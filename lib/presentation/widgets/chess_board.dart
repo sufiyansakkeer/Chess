@@ -77,7 +77,7 @@ class ChessBoard extends StatelessWidget {
     final theme = Theme.of(context);
     return ((row + col) % 2 == 0)
         ? theme.colorScheme.surface
-        : theme.colorScheme.onSurface.withOpacity(0.12);
+        : theme.colorScheme.onSurface.withValues(alpha: 0.12);
   }
 
   Widget _buildMoveIndicator(BuildContext context, bool isCapture) {

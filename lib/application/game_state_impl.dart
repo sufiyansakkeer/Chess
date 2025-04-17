@@ -640,14 +640,12 @@ class GameStateImpl extends ChangeNotifier implements GameState {
     return List.from(_moveHistory);
   }
 
-  @override
   bool isCheckmate(PieceColor color) {
     // Checkmate if currently in check AND has no valid moves
     if (!_isInCheck(color)) return false;
     return !_hasAnyValidMoves(color);
   }
 
-  @override
   bool isStalemate(PieceColor color) {
     // Stalemate if NOT in check AND has no valid moves
     if (_isInCheck(color)) return false;
