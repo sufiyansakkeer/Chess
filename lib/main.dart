@@ -32,6 +32,7 @@ class ChessApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           navigatorKey: navigatorKey,
           title: 'Chess Game',
           theme: themeProvider.getThemeData().copyWith(

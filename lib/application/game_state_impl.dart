@@ -24,10 +24,18 @@ class GameStateImpl extends ChangeNotifier implements GameState {
   // representing the square a capturing pawn would move *to*.
   Position? _enPassantTargetSquare;
   final List<String> _moveHistory = [];
+  final List<PieceEntity> _whiteCapturedPieces = [];
+  final List<PieceEntity> _blackCapturedPieces = [];
 
   GameStateImpl() {
     reset();
   }
+
+  @override
+  List<PieceEntity> get whiteCapturedPieces => List.from(_whiteCapturedPieces);
+
+  @override
+  List<PieceEntity> get blackCapturedPieces => List.from(_blackCapturedPieces);
 
   @override
   List<List<PieceEntity?>> get board =>
@@ -269,6 +277,16 @@ class GameStateImpl extends ChangeNotifier implements GameState {
 
     _currentTurn = opponentColor; // Switch turn
     _moveHistory.add(moveNotation);
+
+    // Add captured piece to captured pieces list
+    if (capturedPiece != null) {
+      if (capturedPiece.color == PieceColor.white) {
+        _whiteCapturedPieces.add(capturedPiece);
+      } else {
+        _blackCapturedPieces.add(capturedPiece);
+      }
+    }
+
     notifyListeners();
     // print("Move successful: ${piece.type} from $from to $to. Turn: $_currentTurn");
     return true;
