@@ -60,10 +60,10 @@ class ChessBoard extends StatelessWidget {
 
   Color _getSquareColor(int row, int col, bool isSelected, bool isValidMove) {
     if (isSelected) {
-      return Colors.blue.withOpacity(0.5);
+      return Colors.blue.withAlpha(128);
     }
     if (isValidMove) {
-      return Colors.green.withOpacity(0.3);
+      return Colors.green.withAlpha(77);
     }
     return ((row + col) % 2 == 0) ? Colors.white : Colors.grey.shade400;
   }
@@ -75,9 +75,7 @@ class ChessBoard extends StatelessWidget {
         height: isCapture ? 40 : 20,
         decoration: BoxDecoration(
           color:
-              isCapture
-                  ? Colors.red.withOpacity(0.3)
-                  : Colors.green.withOpacity(0.3),
+              isCapture ? Colors.red.withAlpha(77) : Colors.green.withAlpha(77),
           shape: BoxShape.circle,
           border: Border.all(
             color: isCapture ? Colors.red : Colors.green,

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:chess/presentation/widgets/chess_board.dart';
 import 'package:chess/presentation/presenters/game_presenter.dart';
 import 'package:chess/application/game_state_impl.dart';
-import 'package:chess/domain/value_objects/position.dart';
 
 void main() {
   late GamePresenter gamePresenter;

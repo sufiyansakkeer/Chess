@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:chess/main.dart';
 import 'package:chess/presentation/pages/game_page.dart';
 import 'package:chess/presentation/widgets/chess_board.dart';
-import 'package:chess/domain/value_objects/piece_color.dart';
 
 void main() {
   testWidgets('GamePage shows initial layout correctly', (

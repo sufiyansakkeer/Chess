@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart'; // Import logging package
 import 'presentation/pages/game_page.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
+  // Configure logging
+  Logger.root.level = Level.ALL; // Set the desired logging level
+  Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print
+    print(
+      '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}',
+    );
+  });
+
   runApp(const ChessApp());
 }
 

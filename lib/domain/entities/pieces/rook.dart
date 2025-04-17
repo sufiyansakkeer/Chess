@@ -1,8 +1,12 @@
+import 'package:logging/logging.dart'; // Import logging package
 import '../../value_objects/piece_type.dart';
 import '../../value_objects/position.dart';
 import '../piece_entity.dart';
 
 class Rook extends PieceEntity {
+  // Logger instance
+  static final _log = Logger('Rook');
+
   Rook({required super.color, required super.position, super.hasMoved})
     : super(type: PieceType.rook);
 
@@ -28,7 +32,7 @@ class Rook extends PieceEntity {
         currentCol += direction[1];
 
         Position newPos = Position(currentRow, currentCol);
-        print("Rook: Checking position: $newPos"); // Add logging
+        _log.finest("Checking position: $newPos"); // Log detailed move checking
         if (!newPos.isValid()) break;
 
         var pieceAtPosition = board[currentRow][currentCol];

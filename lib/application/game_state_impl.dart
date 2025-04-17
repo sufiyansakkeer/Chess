@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart'; // Import logging package
 import '../domain/entities/game_state.dart';
 import '../domain/entities/pieces/bishop.dart';
 import '../domain/entities/pieces/king.dart';
@@ -12,13 +13,13 @@ import '../domain/value_objects/piece_type.dart';
 import '../domain/value_objects/position.dart';
 
 class GameStateImpl extends ChangeNotifier implements GameState {
+  // Logger instance
+  static final _log = Logger('GameStateImpl');
+
   late List<List<PieceEntity?>> _board;
   late PieceColor _currentTurn;
   bool _isGameOver = false;
   PieceColor? _winner;
-  PieceEntity? _lastMovedPiece;
-  Position? _lastMoveFrom;
-  Position? _lastMoveTo;
   // Store the position *behind* the pawn that just moved two squares,
   // representing the square a capturing pawn would move *to*.
   Position? _enPassantTargetSquare;
@@ -136,8 +137,9 @@ class GameStateImpl extends ChangeNotifier implements GameState {
         // print("Castling path blocked: Square ($row, $col) is under attack.");
         return false; // Path is attacked
       }
-      if (col == kingTo.col)
+      if (col == kingTo.col) {
         break; // Stop after checking the destination square
+      }
     }
 
     return true; // Path is clear
@@ -196,8 +198,8 @@ class GameStateImpl extends ChangeNotifier implements GameState {
               null; // Remove the captured pawn
         } else {
           // This case should ideally not happen if enPassantTarget was set correctly
-          print(
-            "Warning: No pawn found at calculated en passant capture square: $enPassantCaptureSquare",
+          _log.warning(
+            "No pawn found at calculated en passant capture square: $enPassantCaptureSquare",
           );
         }
       } else {
@@ -250,9 +252,6 @@ class GameStateImpl extends ChangeNotifier implements GameState {
     }
 
     // --- Post-move updates ---
-    _lastMovedPiece = movedPiece; // Use the potentially promoted piece
-    _lastMoveFrom = from;
-    _lastMoveTo = to;
 
     // Check game over conditions for the opponent
     final opponentColor = _getOppositeColor(_currentTurn);
@@ -313,9 +312,6 @@ class GameStateImpl extends ChangeNotifier implements GameState {
     _currentTurn = PieceColor.white;
     _isGameOver = false;
     _winner = null;
-    _lastMovedPiece = null; // Reset last move info
-    _lastMoveFrom = null;
-    _lastMoveTo = null;
     _enPassantTargetSquare = null; // Reset en passant target
     _initializeBoard();
     notifyListeners();
@@ -408,8 +404,9 @@ class GameStateImpl extends ChangeNotifier implements GameState {
           } finally {
             _currentTurn = originalTurn; // Restore original turn context
           }
-          if (hasMoves)
+          if (hasMoves) {
             return true; // Found a valid move for at least one piece
+          }
         }
       }
     }
@@ -419,17 +416,17 @@ class GameStateImpl extends ChangeNotifier implements GameState {
 
   // Is the king of the specified color currently under attack?
   bool _isInCheck(PieceColor color) {
-    print('_isInCheck called for color: $color');
+    _log.fine('Checking check status for color: $color');
     Position? kingPosition = _findKing(color);
     if (kingPosition == null) {
-      print(
-        'Error: King of color $color not found! Cannot determine check status.',
+      _log.severe(
+        'King of color $color not found! Cannot determine check status.',
       );
       return false; // Cannot be in check if king doesn't exist (indicates error state)
     }
-    print('King position: $kingPosition');
+    _log.finer('King position: $kingPosition');
     final result = _isSquareUnderAttack(kingPosition, color, _board);
-    print('King is in check: $result');
+    _log.fine('King is in check: $result');
     return result;
   }
 
@@ -440,16 +437,16 @@ class GameStateImpl extends ChangeNotifier implements GameState {
     PieceColor targetColor,
     List<List<PieceEntity?>> board,
   ) {
-    print(
-      '_isSquareUnderAttack called for targetPos: $targetPos, targetColor: $targetColor',
+    _log.fine(
+      'Checking if square $targetPos is under attack by opponent of $targetColor',
     );
     final attackerColor = _getOppositeColor(targetColor);
-    print('Attacker color: $attackerColor');
+    _log.finer('Attacker color: $attackerColor');
     for (int r = 0; r < 8; r++) {
       for (int c = 0; c < 8; c++) {
         final piece = board[r][c];
         if (piece != null && piece.color == attackerColor) {
-          print('Found attacker: ${piece.type} at ($r, $c)');
+          _log.finer('Found potential attacker: ${piece.type} at ($r, $c)');
           // Use raw possible moves from the piece logic.
           // Pass enPassantTarget only if the piece is a Pawn.
           final attackMoves =
@@ -461,19 +458,20 @@ class GameStateImpl extends ChangeNotifier implements GameState {
                   : piece.getPossibleMoves(
                     board,
                   ); // Other pieces don't need enPassantTarget
-          print(
-            'Possible attack moves: ${attackMoves.map((p) => '(${p.row}, ${p.col})').join(', ')}',
+          _log.finest(
+            // Very detailed, log only if needed
+            'Possible attack moves for ${piece.type} at ($r, $c): ${attackMoves.map((p) => '(${p.row}, ${p.col})').join(', ')}',
           );
           if (attackMoves.contains(targetPos)) {
-            print(
-              "Square ($targetPos.row, $targetPos.col) is under attack by ${piece.type} at ($r, $c)",
+            _log.fine(
+              "Square $targetPos is under attack by ${piece.type} at ($r, $c)",
             );
             return true;
           }
         }
       }
     }
-    print('Square $targetPos is not under attack');
+    _log.fine('Square $targetPos is not under attack');
     return false;
   }
 
@@ -485,8 +483,9 @@ class GameStateImpl extends ChangeNotifier implements GameState {
   // Operates on a temporary copy of the board state.
   bool _wouldPutKingInCheck(Position from, Position to) {
     final piece = _board[from.row][from.col];
-    if (piece == null)
+    if (piece == null) {
       return true; // Should not happen if called correctly, but safety check
+    }
 
     final kingColor = piece.color;
 
