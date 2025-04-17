@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart'; // Import logging package
+import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 import 'presentation/pages/game_page.dart';
+import 'presentation/providers/theme_provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -14,7 +16,12 @@ void main() {
     );
   });
 
-  runApp(const ChessApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: const ChessApp(),
+    ),
+  );
 }
 
 class ChessApp extends StatelessWidget {
@@ -22,11 +29,23 @@ class ChessApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      title: 'Chess Game',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const GamePage(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) {
+        return MaterialApp(
+          navigatorKey: navigatorKey,
+          title: 'Chess Game',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            brightness: Brightness.light,
+          ),
+          darkTheme: ThemeData(
+            primarySwatch: Colors.blue,
+            brightness: Brightness.dark,
+          ),
+          themeMode: themeProvider.themeMode,
+          home: const GamePage(),
+        );
+      },
     );
   }
 }

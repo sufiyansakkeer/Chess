@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../application/game_state_impl.dart';
 import '../presenters/game_presenter.dart';
 import '../widgets/chess_board.dart';
+import '../providers/theme_provider.dart';
 
 class GamePage extends StatelessWidget {
   const GamePage({super.key});
@@ -20,6 +21,17 @@ class GamePage extends StatelessWidget {
                   (context, presenter, _) => IconButton(
                     icon: const Icon(Icons.refresh),
                     onPressed: presenter.resetGame,
+                  ),
+            ),
+            Consumer<ThemeProvider>(
+              builder:
+                  (context, themeProvider, _) => IconButton(
+                    icon: Icon(
+                      themeProvider.themeMode == ThemeMode.light
+                          ? Icons.dark_mode
+                          : Icons.light_mode,
+                    ),
+                    onPressed: themeProvider.toggleTheme,
                   ),
             ),
           ],

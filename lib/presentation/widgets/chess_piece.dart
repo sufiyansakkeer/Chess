@@ -16,7 +16,9 @@ class ChessPiece extends StatelessWidget {
         style: TextStyle(
           fontSize: 32,
           color:
-              piece.color == PieceColor.white ? Colors.black : Colors.black87,
+              piece.color == PieceColor.white
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.bold,
         ),
       ),

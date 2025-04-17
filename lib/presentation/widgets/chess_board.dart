@@ -35,6 +35,7 @@ class ChessBoard extends StatelessWidget {
                       children: [
                         Container(
                           color: _getSquareColor(
+                            context,
                             row,
                             col,
                             isSelected,
@@ -47,7 +48,8 @@ class ChessBoard extends StatelessWidget {
                             curve: Curves.easeInOut,
                             child: Center(child: ChessPiece(piece: piece)),
                           ),
-                        if (isValidMove) _buildMoveIndicator(piece != null),
+                        if (isValidMove)
+                          _buildMoveIndicator(context, piece != null),
                       ],
                     ),
                   );
@@ -58,17 +60,27 @@ class ChessBoard extends StatelessWidget {
     );
   }
 
-  Color _getSquareColor(int row, int col, bool isSelected, bool isValidMove) {
+  Color _getSquareColor(
+    BuildContext context,
+    int row,
+    int col,
+    bool isSelected,
+    bool isValidMove,
+  ) {
     if (isSelected) {
       return Colors.blue.withAlpha(128);
     }
     if (isValidMove) {
       return Colors.green.withAlpha(77);
     }
-    return ((row + col) % 2 == 0) ? Colors.white : Colors.grey.shade400;
+
+    final theme = Theme.of(context);
+    return ((row + col) % 2 == 0)
+        ? theme.colorScheme.surface
+        : theme.colorScheme.onSurface.withOpacity(0.12);
   }
 
-  Widget _buildMoveIndicator(bool isCapture) {
+  Widget _buildMoveIndicator(BuildContext context, bool isCapture) {
     return Center(
       child: Container(
         width: isCapture ? 40 : 20,
