@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chess/domain/value_objects/piece_color.dart';
 import 'package:chess/domain/value_objects/position.dart';
-import 'package:chess/application/game_state_impl.dart';
+import 'package:chess/application/game_state_manager.dart';
 import 'package:chess/domain/value_objects/piece_type.dart'; // Import PieceType
 import 'package:chess/domain/entities/pieces/pawn.dart'; // Import Pawn
 import 'package:chess/domain/entities/pieces/queen.dart'; // Import Queen
@@ -11,10 +11,10 @@ import 'package:chess/domain/entities/pieces/bishop.dart'; // Import Bishop
 import 'package:chess/domain/entities/pieces/knight.dart'; // Import Knight
 
 void main() {
-  late GameStateImpl gameState;
+  late GameStateManager gameState;
 
   setUp(() {
-    gameState = GameStateImpl();
+    gameState = GameStateManager();
   });
 
   group('GameState Initial Setup', () {
@@ -90,7 +90,7 @@ void main() {
 
   group('Special Moves', () {
     test('kingside castling should work when conditions are met', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Clear pieces between king and rook
       gameState.board[7][5] = null;
       gameState.board[7][6] = null;
@@ -107,7 +107,7 @@ void main() {
     });
 
     test('queenside castling should work when conditions are met', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Clear pieces between king and rook
       gameState.board[7][1] = null;
       gameState.board[7][2] = null;
@@ -125,7 +125,7 @@ void main() {
     });
 
     test('castling should not be allowed through check', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Clear pieces between king and rook
       gameState.board[7][5] = null;
       gameState.board[7][6] = null;
@@ -145,7 +145,7 @@ void main() {
     });
 
     test('pawn promotion should work when reaching the opposite end', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Place a white pawn one step away from promotion
       gameState.board[1][0] = Pawn(
         color: PieceColor.white,
@@ -165,7 +165,7 @@ void main() {
     test(
       'en passant capture should work immediately after double pawn move',
       () {
-        final gameState = GameStateImpl();
+        final gameState = GameStateManager();
         // Set up position: white pawn at e5, black pawn at f7
         gameState.board[3][4] = Pawn(
           color: PieceColor.white,
@@ -195,7 +195,7 @@ void main() {
     test(
       'en passant should only be possible immediately after double pawn move',
       () {
-        final gameState = GameStateImpl();
+        final gameState = GameStateManager();
         // Set up position: white pawn at e5, black pawn at f7
         gameState.board[3][4] = Pawn(
           color: PieceColor.white,
@@ -388,7 +388,7 @@ void main() {
 
   group('Additional Edge Cases', () {
     test('castling should not be allowed if path is under attack', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Clear pieces between king and rook
       gameState.board[7][5] = null;
       gameState.board[7][6] = null;
@@ -408,7 +408,7 @@ void main() {
     });
 
     test('pawn promotion should default to queen if no type is provided', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Place a white pawn one step away from promotion
       gameState.board[1][0] = Pawn(
         color: PieceColor.white,
@@ -426,7 +426,7 @@ void main() {
     });
 
     test('en passant should not be allowed after an intermediate move', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Set up position: white pawn at e5, black pawn at f7
       gameState.board[3][4] = Pawn(
         color: PieceColor.white,
@@ -449,7 +449,7 @@ void main() {
 
   group('Check Detection', () {
     test('should detect check when king is under attack', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Place white king and black queen to create a check situation
       gameState.board[7][4] = King(
         color: PieceColor.white,
@@ -464,7 +464,7 @@ void main() {
     });
 
     test('should not detect check when king is not under attack', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Place white king without any attacking pieces
       gameState.board[7][4] = King(
         color: PieceColor.white,
@@ -475,7 +475,7 @@ void main() {
     });
 
     test('should detect check by knight', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Place white king and black knight to create a check situation
       gameState.board[7][4] = King(
         color: PieceColor.white,
@@ -490,7 +490,7 @@ void main() {
     });
 
     test('should detect check by pawn', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Place white king and black pawn to create a check situation
       gameState.board[7][4] = King(
         color: PieceColor.white,
@@ -505,7 +505,7 @@ void main() {
     });
 
     test('should detect check by rook', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Place white king and black rook to create a check situation
       gameState.board[7][4] = King(
         color: PieceColor.white,
@@ -520,7 +520,7 @@ void main() {
     });
 
     test('should detect check by bishop', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Place white king and black bishop to create a check situation
       gameState.board[7][4] = King(
         color: PieceColor.white,
@@ -535,7 +535,7 @@ void main() {
     });
 
     test('should not detect check when pieces are blocking', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Place white king and black queen, but with a blocking piece
       gameState.board[7][4] = King(
         color: PieceColor.white,
@@ -583,7 +583,7 @@ void main() {
     test(
       'should detect checkmate when king has no valid moves and is under attack',
       () {
-        final gameState = GameStateImpl();
+        final gameState = GameStateManager();
         // Set up a checkmate scenario
         gameState.board[7][4] = King(
           color: PieceColor.white,
@@ -607,7 +607,7 @@ void main() {
     );
 
     test('should not detect checkmate when king has valid moves', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Set up a scenario where the king is in check but has a valid move
       gameState.board[7][4] = King(
         color: PieceColor.white,
@@ -626,7 +626,7 @@ void main() {
     });
 
     test('should detect checkmate with scholars mate', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Initial setup
       gameState.reset();
 
@@ -647,7 +647,7 @@ void main() {
     test(
       'should detect stalemate when king has no valid moves and is not in check',
       () {
-        final gameState = GameStateImpl();
+        final gameState = GameStateManager();
         // Set up a stalemate scenario
         gameState.board[7][4] = King(
           color: PieceColor.white,
@@ -679,7 +679,7 @@ void main() {
     );
 
     test('should not detect stalemate when king has valid moves', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Set up a scenario where the king is not in check and has a valid move
       gameState.board[7][4] = King(
         color: PieceColor.white,
@@ -706,7 +706,7 @@ void main() {
     });
 
     test('should not detect stalemate when king is in check', () {
-      final gameState = GameStateImpl();
+      final gameState = GameStateManager();
       // Set up a scenario where the king is in check
       gameState.board[7][4] = King(
         color: PieceColor.white,

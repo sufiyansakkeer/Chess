@@ -6,7 +6,7 @@ class King extends PieceEntity {
   King({required super.color, required super.position, super.hasMoved})
     : super(type: PieceType.king);
 
-  // Castling logic is now handled in GameStateImpl.getValidMovesForPiece
+  // Castling logic is now handled in GameStateManager.getValidMovesForPiece
   // En passant target is irrelevant for King moves
   @override
   List<Position> getPossibleMoves(
@@ -35,7 +35,7 @@ class King extends PieceEntity {
       }
     }
 
-    // Castling moves are generated and validated in GameStateImpl
+    // Castling moves are generated and validated in GameStateManager
 
     return moves;
   }
@@ -48,7 +48,7 @@ class King extends PieceEntity {
   }
 
   // Removed _canCastleKingside, _canCastleQueenside, _isInCheck, _isSquareUnderDirectAttack
-  // as this logic is now centralized in GameStateImpl
+  // as this logic is now centralized in GameStateManager
 
   @override
   PieceEntity copyWith({Position? position, bool? hasMoved}) {

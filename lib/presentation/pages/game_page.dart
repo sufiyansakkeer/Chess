@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../application/game_state_impl.dart';
+import '../../application/game_state_manager.dart';
 import '../presenters/game_presenter.dart';
 import '../widgets/chess_board.dart';
 import '../providers/theme_provider.dart';
@@ -12,7 +12,7 @@ class GamePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => GamePresenter(GameStateImpl()),
+      create: (_) => GamePresenter(GameStateManager()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Chess Game'),

@@ -6,7 +6,7 @@ import 'package:chess/domain/entities/pieces/king.dart';
 import 'package:chess/domain/entities/pieces/queen.dart';
 import 'package:chess/domain/value_objects/piece_color.dart';
 import 'package:chess/domain/value_objects/position.dart';
-import 'package:chess/application/game_state_impl.dart';
+import 'package:chess/application/game_state_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:chess/presentation/presenters/game_presenter.dart';
 
@@ -32,7 +32,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: ChangeNotifierProvider(
-          create: (context) => GamePresenter(GameStateImpl()),
+          create: (context) => GamePresenter(GameStateManager()),
           child: GamePage(),
         ),
       ),

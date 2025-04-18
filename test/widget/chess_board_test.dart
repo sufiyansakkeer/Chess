@@ -3,13 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:chess/presentation/widgets/chess_board.dart';
 import 'package:chess/presentation/presenters/game_presenter.dart';
-import 'package:chess/application/game_state_impl.dart';
+import 'package:chess/application/game_state_manager.dart';
 
 void main() {
   late GamePresenter gamePresenter;
 
   setUp(() {
-    gamePresenter = GamePresenter(GameStateImpl());
+    gamePresenter = GamePresenter(GameStateManager());
   });
 
   testWidgets('ChessBoard displays initial layout correctly', (

@@ -3,7 +3,7 @@ import '../../value_objects/piece_type.dart';
 import '../../value_objects/position.dart';
 import '../piece_entity.dart';
 
-// Remove the mixin as en passant state is managed in GameStateImpl
+// Remove the mixin as en passant state is managed in GameStateManager
 class Pawn extends PieceEntity {
   // final bool _isEnPassantEligible; // Removed
 
@@ -61,7 +61,7 @@ class Pawn extends PieceEntity {
       }
 
       // En passant capture
-      // Check if the capture position matches the en passant target square passed from GameState
+      // Check if the capture position matches the en passant target square passed from GameStateManager
       if (capturePos == enPassantTarget) {
         // Check if the pawn being captured is actually adjacent
         final adjacentPawnPos = Position(
@@ -89,7 +89,7 @@ class Pawn extends PieceEntity {
     return getPossibleMoves(board, enPassantTarget);
   }
 
-  // Remove isEnPassantEligible from copyWith as it's now managed by GameStateImpl._enPassantTargetSquare
+  // Remove isEnPassantEligible from copyWith as it's now managed by GameStateManager._enPassantTargetSquare
   @override
   PieceEntity copyWith({
     Position? position,

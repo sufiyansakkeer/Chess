@@ -36,7 +36,7 @@ This Flutter chess game follows a layered architecture, separating the domain lo
   - `lib/domain/value_objects/`: Defines value objects like `Position`, `PieceColor`, and `PieceType`. These classes represent simple data structures with no identity.
   - `lib/domain/entities/game_state.dart`: Defines the `GameState` interface, which outlines the contract for managing the game state.
 - **Application Layer:** This layer implements the use cases of the application and orchestrates the domain logic.
-  - `lib/application/game_state_impl.dart`: Implements the `GameState` interface. It manages the game board, piece movements, turn management, and game over conditions. It also handles special moves like castling and en passant.
+  - `lib/application/game_state_manager.dart`: Implements the `GameState` interface. It manages the game board, piece movements, turn management, and game over conditions. It also handles special moves like castling and en passant.
 - **Presentation Layer:** This layer is responsible for the UI and user interaction.
   - `lib/presentation/pages/game_page.dart`: Builds the UI for the chess game, including the chessboard and piece rendering.
   - `lib/presentation/presenters/game_presenter.dart`: Acts as a presenter, taking user input from the `GamePage` and interacting with the `GameState` to update the game. It also manages the UI state, such as selected pieces and valid moves.
@@ -44,17 +44,18 @@ This Flutter chess game follows a layered architecture, separating the domain lo
 
 ### Game Logic
 
-The core game logic is implemented in the `GameStateImpl` class. It manages the following:
+The core game logic is implemented in the `GameStateManager` class. It manages the following:
 
 - **Board Representation:** The chessboard is represented as a 2D list of `PieceEntity?`.
 - **Piece Movement:** The `movePiece` method handles piece movements, including validation, special moves, and pawn promotion.
 - **Turn Management:** The `currentTurn` property tracks the current player's turn.
 - **Game Over Conditions:** The `isGameOver` property indicates whether the game is over, and the `winner` property indicates the winner (if any).
 - **Valid Move Calculation:** The `getValidMovesForPiece` method calculates the valid moves for a given piece, taking into account the piece's type, position, and the current board state. It also checks for checks, checkmates, and stalemates.
+- **Castling Logic:** Ensures proper handling of castling moves, including rook and king movement validation.
 
 ### Interactions
 
-The `GamePage` interacts with the `GamePresenter` to handle user input, such as piece selections and move attempts. The `GamePresenter` then interacts with the `GameStateImpl` to update the game state. The `GameStateImpl` notifies the `GamePresenter` of any changes, which in turn updates the UI.
+The `GamePage` interacts with the `GamePresenter` to handle user input, such as piece selections and move attempts. The `GamePresenter` then interacts with the `GameStateManager` to update the game state. The `GameStateManager` notifies the `GamePresenter` of any changes, which in turn updates the UI.
 
 This architecture ensures a clear separation of concerns, making the codebase easier to understand, maintain, and test.
 
@@ -63,7 +64,7 @@ This architecture ensures a clear separation of concerns, making the codebase ea
 ```
 lib/
 ├── application/
-│   └── game_state_impl.dart
+│   └── game_state_manager.dart
 ├── domain/
 │   ├── entities/
 │   │   ├── game_state.dart

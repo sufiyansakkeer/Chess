@@ -1,6 +1,6 @@
 # Test Plan for Game State Validation Logic
 
-This document outlines the test plan for the game state validation logic in the chess application. The focus is on testing the `isCheck`, `isCheckmate`, and `isStalemate` methods in the `GameStateImpl` class, as well as the helper methods used by these methods.
+This document outlines the test plan for the game state validation logic in the chess application. The focus is on testing the `isCheck`, `isCheckmate`, and `isStalemate` methods in the `GameStateManager` class, as well as the helper methods used by these methods.
 
 ## Test Areas
 
