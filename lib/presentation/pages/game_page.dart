@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../application/game_state_impl.dart';
 import '../presenters/game_presenter.dart';
 import '../widgets/chess_board.dart';
@@ -32,6 +33,42 @@ class GamePage extends StatelessWidget {
                           : Icons.light_mode,
                     ),
                     onPressed: themeProvider.toggleTheme,
+                  ),
+            ),
+            Consumer<ThemeProvider>(
+              builder:
+                  (context, themeProvider, _) => PopupMenuButton<String>(
+                    icon: const Icon(Icons.palette),
+                    onSelected: (String style) {
+                      themeProvider.setThemeStyle(style);
+                    },
+                    itemBuilder:
+                        (BuildContext context) => [
+                          const PopupMenuItem(
+                            value: 'classic',
+                            child: Text('Classic'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'modern',
+                            child: Text('Modern'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'forest',
+                            child: Text('Forest'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'ocean',
+                            child: Text('Ocean'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'sunset',
+                            child: Text('Sunset'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'minimalist',
+                            child: Text('Minimalist'),
+                          ),
+                        ],
                   ),
             ),
           ],
@@ -99,6 +136,25 @@ class GamePage extends StatelessWidget {
                         },
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    Consumer<GamePresenter>(
+                      builder:
+                          (context, presenter, _) => Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildCapturedPieces(
+                                context,
+                                presenter.gameState.whiteCapturedPieces,
+                                'White',
+                              ),
+                              _buildCapturedPieces(
+                                context,
+                                presenter.gameState.blackCapturedPieces,
+                                'Black',
+                              ),
+                            ],
+                          ),
+                    ),
                   ],
                 ),
               ),
@@ -106,6 +162,29 @@ class GamePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCapturedPieces(BuildContext context, List pieces, String color) {
+    return Column(
+      children: [
+        Text(
+          '$color Captured Pieces',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Wrap(
+          children:
+              pieces.map((piece) {
+                return SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: SvgPicture.asset(
+                    'assets/${piece.color.toString().split('.').last}_${piece.type.toString().split('.').last}.svg',
+                  ),
+                );
+              }).toList(),
+        ),
+      ],
     );
   }
 }

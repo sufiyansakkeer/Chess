@@ -20,4 +20,6 @@ abstract class GameState {
   // );
   void reset();
   List<String> getMoveHistory();
+  List<PieceEntity> get whiteCapturedPieces;
+  List<PieceEntity> get blackCapturedPieces;
 }
