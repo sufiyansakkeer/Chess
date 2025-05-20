@@ -1,8 +1,99 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" width="45" height="45">
-  <g fill="#333" fill-rule="evenodd" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M9 39h27v-3H9v3zM12.5 32l1.5-2.5h17l1.5 2.5h-20zM12 36v-4h21v4H12z" stroke-linecap="butt"/>
-    <path d="M14 29.5v-13h17v13H14z" stroke-linecap="butt" stroke-linejoin="miter"/>
-    <path d="M14 16.5L11 14h23l-3 2.5H14zM11 14V9h4v2h5V9h5v2h5V9h4v5H11z" stroke-linecap="butt"/>
-    <path d="M12 35.5h21M13 31.5h19M14 29.5h17M14 16.5h17M11 14h23" fill="none" stroke="#ccc" stroke-width="1" stroke-linejoin="miter"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 45 45" width="45" height="45">
+  <defs>
+    <!-- Premium black gradient with subtle blue tint -->
+    <linearGradient id="blackTribalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#303035" />
+      <stop offset="40%" stop-color="#252530" />
+      <stop offset="70%" stop-color="#1a1a25" />
+      <stop offset="100%" stop-color="#101020" />
+    </linearGradient>
+    
+    <!-- Accent gradient for decorative elements -->
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#404050" />
+      <stop offset="50%" stop-color="#606070" />
+      <stop offset="100%" stop-color="#404050" />
+    </linearGradient>
+    
+    <!-- Enhanced shadow filter for dramatic 3D effect -->
+    <filter id="tribalShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.8" />
+      <feOffset dx="1.2" dy="2.5" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.7" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    
+    <!-- Glow effect for highlights -->
+    <filter id="tribalGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.2" result="blur" />
+      <feComposite operator="over" in="SourceGraphic" />
+    </filter>
+  </defs>
+  
+  <!-- Main rook shape with tribal-inspired design -->
+  <g filter="url(#tribalShadow)">
+    <!-- Base of the rook with tribal pattern -->
+    <path d="M10 37h25v-5l-3,-2h-19l-3,2z"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1.2" stroke-linejoin="round" />
+    
+    <!-- Decorative base pattern -->
+    <path d="M12 34l3,-2h15l3,2"
+          fill="none" stroke="#aaa" stroke-width="0.8" stroke-linejoin="round" />
+    
+    <!-- Middle section with tribal curves -->
+    <path d="M14 30c0,0 0,-10 0,-10c0,0 -1,-2 4,-2h9c5,0 4,2 4,2c0,0 0,10 0,10z"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1.2" stroke-linejoin="round" />
+    
+    <!-- Tribal pattern on middle section -->
+    <path d="M16 28c0,-8 0,-8 0,-8c0,0 0,-1 2,-1h9c2,0 2,1 2,1c0,0 0,0 0,8"
+          fill="none" stroke="#aaa" stroke-width="0.7" stroke-opacity="0.5" />
+    
+    <!-- Decorative middle band -->
+    <path d="M14 24h17 M14 20h17"
+          stroke="url(#accentGradient)" stroke-width="0.8" stroke-linecap="round" fill="none" />
+    
+    <!-- Top crown section with flame-like design -->
+    <path d="M14 18c0,0 1,-1 3,-1h11c2,0 3,1 3,1v1h-17z"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1.2" stroke-linejoin="round" />
+    
+    <!-- Flame-like crown elements inspired by the reference image -->
+    <path d="M16 18v-7c0,0 0.5,-1 1.5,-1s2,1 2,2c0,1 0,4 0,6"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1" stroke-linejoin="round" />
+          
+    <path d="M20 18v-8c0,0 0.5,-1.5 2.5,-1.5s2.5,1.5 2.5,2.5c0,1 0,5 0,7"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1" stroke-linejoin="round" />
+          
+    <path d="M26 18v-7c0,0 0.5,-1 1.5,-1s2,1 2,2c0,1 0,4 0,6"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1" stroke-linejoin="round" />
+    
+    <!-- Inner flame details -->
+    <path d="M17.5 17v-5c0,0 0.2,-0.5 0.7,-0.5s1,0.5 1,1c0,0.5 0,3 0,4.5"
+          fill="none" stroke="#aaa" stroke-width="0.5" stroke-opacity="0.3" />
+          
+    <path d="M21.5 17v-6c0,0 0.2,-0.7 1.2,-0.7s1.2,0.7 1.2,1.2c0,0.5 0,3.5 0,5.5"
+          fill="none" stroke="#aaa" stroke-width="0.5" stroke-opacity="0.3" />
+          
+    <path d="M27.5 17v-5c0,0 0.2,-0.5 0.7,-0.5s1,0.5 1,1c0,0.5 0,3 0,4.5"
+          fill="none" stroke="#aaa" stroke-width="0.5" stroke-opacity="0.3" />
+  </g>
+  
+  <!-- Highlights for enhanced 3D effect -->
+  <g filter="url(#tribalGlow)">
+    <!-- Highlight on base -->
+    <path d="M13 33l2,-1h15l2,1" 
+          stroke="white" stroke-width="0.7" stroke-opacity="0.15" stroke-linecap="round" fill="none" />
+    
+    <!-- Vertical highlights on middle section -->
+    <path d="M17 28c0,-7 0,-7 0,-7 M28 28c0,-7 0,-7 0,-7" 
+          stroke="white" stroke-width="0.6" stroke-opacity="0.12" stroke-linecap="round" fill="none" />
+    
+    <!-- Highlights on flame crown -->
+    <path d="M17.5 15c0,0 0.5,-1 1,-1 M22.5 14c0,0 0.5,-1 1,-1 M27.5 15c0,0 0.5,-1 1,-1" 
+          stroke="white" stroke-width="0.5" stroke-opacity="0.15" stroke-linecap="round" fill="none" />
   </g>
 </svg>

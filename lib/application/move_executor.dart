@@ -1,6 +1,8 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:logging/logging.dart';
 import '../domain/entities/pieces/pawn.dart';
-import '../domain/entities/pieces/king.dart';
+// import '../domain/entities/pieces/king.dart';
 import '../domain/entities/pieces/queen.dart';
 import '../domain/entities/pieces/rook.dart';
 import '../domain/entities/pieces/bishop.dart';

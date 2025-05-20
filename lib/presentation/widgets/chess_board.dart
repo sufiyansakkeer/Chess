@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../application/feedback_service.dart';
 import '../../domain/value_objects/position.dart';
-import '../presenters/game_presenter.dart';
+import '../blocs/blocs.dart';
 import 'chess_piece.dart';
 
 class ChessBoard extends StatelessWidget {
@@ -9,92 +10,93 @@ class ChessBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.black, width: 2),
-        ),
-        child: Consumer<GamePresenter>(
-          builder:
-              (context, presenter, _) => GridView.count(
-                crossAxisCount: 8,
-                physics: const NeverScrollableScrollPhysics(),
-                children: List.generate(64, (index) {
-                  final row = index ~/ 8;
-                  final col = index % 8;
-                  final position = Position(row, col);
-                  final piece = presenter.board[row][col];
-                  final isSelected = position == presenter.selectedPosition;
-                  final isValidMove = presenter.validMoves.contains(position);
+    final feedbackService = FeedbackService();
+    final colorScheme = Theme.of(context).colorScheme;
 
-                  return GestureDetector(
-                    key: ValueKey('square_${row}_$col'),
-                    onTap: () => presenter.selectPosition(context, position),
-                    child: Stack(
-                      children: [
-                        Container(
-                          color: _getSquareColor(
-                            context,
-                            row,
-                            col,
-                            isSelected,
-                            isValidMove,
-                          ),
-                        ),
-                        if (piece != null)
-                          AnimatedPositioned(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            child: Center(child: ChessPiece(piece: piece)),
-                          ),
-                        if (isValidMove)
-                          _buildMoveIndicator(context, piece != null),
-                      ],
-                    ),
+    return BlocBuilder<GamePresenterBloc, GamePresenterState>(
+      builder: (context, state) {
+        return AspectRatio(
+          aspectRatio: 1,
+          child: GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 8,
+            ),
+            itemCount: 64,
+            itemBuilder: (context, index) {
+              final row = index ~/ 8;
+              final col = index % 8;
+              final position = Position(row, col);
+              final piece = state.board[row][col];
+              final isSelected = state.selectedPosition == position;
+              final isValidMove = state.validMoves.contains(position);
+              final isLastMovedFrom = state.lastMovedFrom == position;
+              final isLastMovedTo = state.lastMovedTo == position;
+
+              // Determine square color
+              final isLightSquare = (row + col) % 2 == 0;
+              final squareColor =
+                  isLightSquare
+                      ? colorScheme.primary.withAlpha(25)
+                      : colorScheme.primary.withAlpha(76);
+
+              // Determine highlight colors
+              final selectedColor = colorScheme.primary.withAlpha(178);
+              final validMoveColor = colorScheme.secondary.withAlpha(127);
+              final lastMovedFromColor = colorScheme.tertiary.withAlpha(76);
+              final lastMovedToColor = colorScheme.tertiary.withAlpha(127);
+
+              // Apply appropriate color based on square state
+              Color backgroundColor = squareColor;
+              if (isSelected) {
+                backgroundColor = selectedColor;
+              } else if (isValidMove) {
+                backgroundColor = validMoveColor;
+              } else if (isLastMovedFrom) {
+                backgroundColor = lastMovedFromColor;
+              } else if (isLastMovedTo) {
+                backgroundColor = lastMovedToColor;
+              }
+
+              return GestureDetector(
+                onTap: () {
+                  // Handle square tap
+                  context.read<GamePresenterBloc>().add(
+                    SelectPosition(context: context, position: position),
                   );
-                }),
-              ),
-        ),
-      ),
-    );
-  }
 
-  Color _getSquareColor(
-    BuildContext context,
-    int row,
-    int col,
-    bool isSelected,
-    bool isValidMove,
-  ) {
-    if (isSelected) {
-      return Colors.blue.withAlpha(128);
-    }
-    if (isValidMove) {
-      return Colors.green.withAlpha(77);
-    }
-
-    final theme = Theme.of(context);
-    return ((row + col) % 2 == 0)
-        ? theme.colorScheme.surface
-        : theme.colorScheme.onSurface.withValues(alpha: 0.12);
-  }
-
-  Widget _buildMoveIndicator(BuildContext context, bool isCapture) {
-    return Center(
-      child: Container(
-        width: isCapture ? 40 : 20,
-        height: isCapture ? 40 : 20,
-        decoration: BoxDecoration(
-          color:
-              isCapture ? Colors.red.withAlpha(77) : Colors.green.withAlpha(77),
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: isCapture ? Colors.red : Colors.green,
-            width: 2,
+                  // Provide haptic feedback
+                  if (piece != null) {
+                    feedbackService.selectionClick();
+                  } else if (isValidMove) {
+                    feedbackService.lightImpact();
+                  } else {
+                    feedbackService.selectionClick();
+                  }
+                },
+                child: Container(
+                  color: backgroundColor,
+                  child: Center(
+                    child:
+                        piece != null
+                            ? ChessPiece(piece: piece)
+                            : isValidMove
+                            ? Container(
+                              width: 16,
+                              height: 16,
+                              decoration: BoxDecoration(
+                                color: colorScheme.secondary.withAlpha(76),
+                                shape: BoxShape.circle,
+                              ),
+                            )
+                            : null,
+                  ),
+                ),
+              );
+            },
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

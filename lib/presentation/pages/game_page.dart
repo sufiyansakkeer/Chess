@@ -1,160 +1,173 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import '../../application/game_state_manager.dart';
-import '../presenters/game_presenter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:animations/animations.dart';
+import '../blocs/blocs.dart';
 import '../widgets/chess_board.dart';
-import '../providers/theme_provider.dart';
+import '../widgets/move_history_and_captured_pieces.dart';
 
 class GamePage extends StatelessWidget {
   const GamePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => GamePresenter(GameStateManager()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Chess Game'),
-          actions: [
-            Consumer<GamePresenter>(
-              builder:
-                  (context, presenter, _) => IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: presenter.resetGame,
-                  ),
-            ),
-            Consumer<ThemeProvider>(
-              builder:
-                  (context, themeProvider, _) => IconButton(
-                    icon: Icon(
-                      themeProvider.themeMode == ThemeMode.light
-                          ? Icons.dark_mode
-                          : Icons.light_mode,
-                    ),
-                    onPressed: themeProvider.toggleTheme,
-                  ),
-            ),
-            Consumer<ThemeProvider>(
-              builder:
-                  (context, themeProvider, _) => PopupMenuButton<String>(
-                    icon: const Icon(Icons.palette),
-                    onSelected: (String style) {
-                      themeProvider.setThemeStyle(style);
-                    },
-                    itemBuilder:
-                        (BuildContext context) => [
-                          const PopupMenuItem(
-                            value: 'classic',
-                            child: Text('Classic'),
-                          ),
-                          const PopupMenuItem(
-                            value: 'modern',
-                            child: Text('Modern'),
-                          ),
-                          const PopupMenuItem(
-                            value: 'forest',
-                            child: Text('Forest'),
-                          ),
-                          const PopupMenuItem(
-                            value: 'ocean',
-                            child: Text('Ocean'),
-                          ),
-                          const PopupMenuItem(
-                            value: 'sunset',
-                            child: Text('Sunset'),
-                          ),
-                          const PopupMenuItem(
-                            value: 'minimalist',
-                            child: Text('Minimalist'),
-                          ),
-                        ],
-                  ),
-            ),
-          ],
-        ),
-        body: SingleChildScrollView(
+    return const GamePageContent();
+  }
+}
+
+class GamePageContent extends StatelessWidget {
+  const GamePageContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Chess Game'),
+        elevation: 0,
+        scrolledUnderElevation: 2,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Reset Game',
+            onPressed: () {
+              context.read<GamePresenterBloc>().add(const ResetGame());
+            },
+          ),
+          BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, themeState) {
+              return IconButton(
+                icon: Icon(
+                  themeState.themeMode == ThemeMode.light
+                      ? Icons.dark_mode
+                      : Icons.light_mode,
+                ),
+                tooltip: 'Toggle Theme',
+                onPressed: () {
+                  context.read<ThemeBloc>().add(const ThemeToggled());
+                },
+              );
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
+                constraints: const BoxConstraints(maxWidth: 600),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Consumer<GamePresenter>(
-                      builder: (context, presenter, _) {
-                        if (presenter.gameState.isGameOver) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              presenter.winner != null
-                                  ? '${presenter.winner} wins!'
-                                  : 'Game Over - Draw!',
-                              style: Theme.of(context).textTheme.headlineMedium,
-                            ),
-                          );
-                        } else if (presenter.gameState.isKingInCheck) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              '${presenter.currentTurn.toString().split('.').last.toUpperCase()} King is in CHECK!',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
+                    // Game status with animation
+                    BlocBuilder<GamePresenterBloc, GamePresenterState>(
+                      builder: (context, state) {
+                        Widget statusWidget;
+                        
+                        if (state.isGameOver) {
+                          statusWidget = Card(
+                            key: const ValueKey('game-over'),
+                            color: colorScheme.tertiaryContainer,
+                            elevation: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                state.winner != null
+                                    ? '${state.winner.toString().split('.').last.toUpperCase()} wins!'
+                                    : 'Game Over - Draw!',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineMedium?.copyWith(
+                                  color: colorScheme.onTertiaryContainer,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
+                          );
+                        } else {
+                          statusWidget = const SizedBox(
+                            key: ValueKey('no-status'),
+                            height: 16,
                           );
                         }
-                        return const SizedBox(height: 16);
+
+                        return PageTransitionSwitcher(
+                          transitionBuilder: (
+                            child,
+                            primaryAnimation,
+                            secondaryAnimation,
+                          ) {
+                            return FadeThroughTransition(
+                              animation: primaryAnimation,
+                              secondaryAnimation: secondaryAnimation,
+                              child: child,
+                            );
+                          },
+                          child: statusWidget,
+                        );
                       },
                     ),
-                    Consumer<GamePresenter>(
-                      builder:
-                          (context, presenter, _) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(
-                              'Current Turn: ${presenter.currentTurn.toString().split('.').last.toUpperCase()}',
-                              style: Theme.of(context).textTheme.headlineSmall,
+
+                    const SizedBox(height: 16),
+
+                    // Current turn indicator
+                    BlocBuilder<GamePresenterBloc, GamePresenterState>(
+                      builder: (context, state) {
+                        return Card(
+                          color: colorScheme.primaryContainer,
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12.0,
+                              horizontal: 16.0,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.arrow_right,
+                                  color: colorScheme.onPrimaryContainer,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Current Turn: ${state.currentTurn.toString().split('.').last.toUpperCase()}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium?.copyWith(
+                                    color: colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                        );
+                      },
                     ),
-                    const SizedBox(height: 8),
-                    const ChessBoard(),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 200,
-                      child: Consumer<GamePresenter>(
-                        builder: (context, presenter, _) {
-                          return ListView.builder(
-                            itemCount: presenter.moveHistory.length,
-                            itemBuilder: (context, index) {
-                              return Text(presenter.moveHistory[index]);
-                            },
-                          );
-                        },
+
+                    const SizedBox(height: 16),
+
+                    // Chess board with elevation and border
+                    Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: ChessBoard(),
                       ),
                     ),
+
                     const SizedBox(height: 16),
-                    Consumer<GamePresenter>(
-                      builder:
-                          (context, presenter, _) => Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildCapturedPieces(
-                                context,
-                                presenter.gameState.whiteCapturedPieces,
-                                'White',
-                              ),
-                              _buildCapturedPieces(
-                                context,
-                                presenter.gameState.blackCapturedPieces,
-                                'Black',
-                              ),
-                            ],
-                          ),
-                    ),
+
+                    // Move history and captured pieces
+                    const MoveHistoryAndCapturedPieces(),
                   ],
                 ),
               ),
@@ -162,29 +175,6 @@ class GamePage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildCapturedPieces(BuildContext context, List pieces, String color) {
-    return Column(
-      children: [
-        Text(
-          '$color Captured Pieces',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        Wrap(
-          children:
-              pieces.map((piece) {
-                return SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: SvgPicture.asset(
-                    'assets/${piece.color.toString().split('.').last}_${piece.type.toString().split('.').last}.svg',
-                  ),
-                );
-              }).toList(),
-        ),
-      ],
     );
   }
 }

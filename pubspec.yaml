@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.0.0
   logging: ^1.2.0 # Added for structured logging
 
   # The following adds the Cupertino Icons font to your application.
@@ -38,6 +37,23 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   flutter_svg: ^2.0.17
+
+  # Material 3 support
+  dynamic_color: ^1.7.0
+  google_fonts: ^6.1.0
+  animations: ^2.0.11
+
+  # Sound effects
+  just_audio: ^0.9.36
+
+  # Local storage
+  shared_preferences: ^2.2.2
+
+  # UUID generation
+  uuid: ^4.3.3
+  flutter_bloc: ^9.1.1
+  bloc: ^9.0.0
+  equatable: ^2.0.7
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +79,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
+    - assets/sounds/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

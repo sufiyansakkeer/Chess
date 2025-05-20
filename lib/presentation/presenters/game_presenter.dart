@@ -10,6 +10,9 @@ class GamePresenter extends ChangeNotifier {
   final GameState _gameState;
   Position? _selectedPosition;
   List<Position> _validMoves = [];
+  Position? _lastMovedFrom;
+  Position? _lastMovedTo;
+  PieceEntity? _lastMovedPiece;
 
   GamePresenter(this._gameState);
 
@@ -21,6 +24,11 @@ class GamePresenter extends ChangeNotifier {
   Position? get selectedPosition => _selectedPosition;
   List<Position> get validMoves => _validMoves;
   List<String> get moveHistory => _gameState.getMoveHistory();
+  Position? get lastMovedFrom => _lastMovedFrom;
+  Position? get lastMovedTo => _lastMovedTo;
+
+  // Get the last moved piece for animation purposes
+  PieceEntity? getLastMovedPiece() => _lastMovedPiece;
 
   Future<PieceType?> showPromotionDialog(BuildContext context) async {
     return showDialog<PieceType>(
@@ -65,6 +73,11 @@ class GamePresenter extends ChangeNotifier {
       final selectedPiece =
           board[_selectedPosition!.row][_selectedPosition!.col];
 
+      // Store the piece and positions for animation before the move
+      _lastMovedPiece = selectedPiece;
+      _lastMovedFrom = _selectedPosition;
+      _lastMovedTo = position;
+
       // Check for pawn promotion using the piece's method and the target position
       if (selectedPiece is Pawn && selectedPiece.canPromote(position)) {
         // Handle pawn promotion
@@ -81,6 +94,9 @@ class GamePresenter extends ChangeNotifier {
         } else {
           // If the dialog is dismissed (promotionType is null), don't make the move.
           // The selection remains active.
+          _lastMovedFrom = null;
+          _lastMovedTo = null;
+          _lastMovedPiece = null;
           notifyListeners(); // Update UI to reflect potentially cleared selection state if needed elsewhere
           return; // Exit without clearing selection or making a move
         }
@@ -103,5 +119,9 @@ class GamePresenter extends ChangeNotifier {
   void resetGame() {
     _gameState.reset();
     _clearSelection();
+    _lastMovedFrom = null;
+    _lastMovedTo = null;
+    _lastMovedPiece = null;
+    notifyListeners();
   }
 }

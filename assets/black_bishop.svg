@@ -1,11 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" width="45" height="45">
-  <g fill="none" fill-rule="evenodd" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <g fill="#333" stroke-linecap="butt">
-      <path d="M9 36c3.39-.97 10.11.43 13.5 5 3.39-4.57 10.11-5.97 13.5-5"/>
-      <path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/>
-      <path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z"/>
-    </g>
-    <path d="M17.5 26h10M15 32h15m-7.5-14.5s-5-4-2.5-7.5" stroke="#ccc" stroke-linecap="round"/>
-    <path d="M22.5 11.5c5 2.5 4 7.5 4 7.5" stroke-linejoin="miter"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 45 45" width="45" height="45">
+  <defs>
+    <!-- Premium black gradient with subtle blue tint -->
+    <linearGradient id="blackTribalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#303035" />
+      <stop offset="40%" stop-color="#252530" />
+      <stop offset="70%" stop-color="#1a1a25" />
+      <stop offset="100%" stop-color="#101020" />
+    </linearGradient>
+    
+    <!-- Highlight gradient for the bishop's flame top -->
+    <linearGradient id="flameHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
+    </linearGradient>
+    
+    <!-- Enhanced shadow filter for dramatic 3D effect -->
+    <filter id="tribalShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" />
+      <feOffset dx="1" dy="2" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.6" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    
+    <!-- Glow effect for highlights -->
+    <filter id="tribalGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1" result="blur" />
+      <feComposite operator="over" in="SourceGraphic" />
+    </filter>
+  </defs>
+  
+  <!-- Main bishop shape with tribal-inspired design -->
+  <g filter="url(#tribalShadow)">
+    <!-- Base of the bishop with tribal pattern -->
+    <path d="M12 37h21v-4l-2,-2h-17l-2,2z"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1.2" stroke-linejoin="round" />
+    
+    <!-- Decorative base pattern -->
+    <path d="M14 34l2,-1h13l2,1"
+          fill="none" stroke="#aaa" stroke-width="0.7" stroke-opacity="0.5" />
+    
+    <!-- Middle section with tribal curves -->
+    <path d="M16 31c0,0 0,-5 0,-5c0,-2 3,-4 6.5,-4c3.5,0 6.5,2 6.5,4c0,0 0,5 0,5z"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1.2" stroke-linejoin="round" />
+    
+    <!-- Tribal pattern on middle section -->
+    <path d="M18 29c0,-3 0,-3 0,-3c0,0 2,-2 4.5,-2c2.5,0 4.5,2 4.5,2c0,0 0,0 0,3"
+          fill="none" stroke="#aaa" stroke-width="0.7" stroke-opacity="0.5" />
+    
+    <!-- Neck of the bishop with tribal styling -->
+    <path d="M19 26c0,0 1.5,-2 3.5,-2c2,0 3.5,2 3.5,2v-3c0,0 -1.5,-2 -3.5,-2c-2,0 -3.5,2 -3.5,2v3z"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1.2" stroke-linejoin="round" />
+    
+    <!-- Flame-like top of the bishop -->
+    <path d="M19 20v-2c0,0 0,-3 3.5,-5c3.5,2 3.5,5 3.5,5v2c0,0 -1,-2 -3.5,-2c-2.5,0 -3.5,2 -3.5,2z"
+          fill="url(#blackTribalGradient)" stroke="#aaa" stroke-width="1.2" stroke-linejoin="round" />
+  </g>
+  
+  <!-- Bishop's cross detail with tribal styling -->
+  <path d="M22.5 20v-7"
+        stroke="#aaa" stroke-width="1.2" stroke-linecap="round" fill="none" />
+  
+  <path d="M20 16h5"
+        stroke="#aaa" stroke-width="1.2" stroke-linecap="round" fill="none" />
+  
+  <!-- Highlights for enhanced 3D effect -->
+  <g filter="url(#tribalGlow)">
+    <!-- Highlight on base -->
+    <path d="M15 33l1.5,-0.5h12l1.5,0.5" 
+          stroke="white" stroke-width="0.6" stroke-opacity="0.15" stroke-linecap="round" fill="none" />
+    
+    <!-- Vertical highlights on middle section -->
+    <path d="M19 28c0,-2 0,-2 0,-2 M26 28c0,-2 0,-2 0,-2" 
+          stroke="white" stroke-width="0.5" stroke-opacity="0.12" stroke-linecap="round" fill="none" />
+    
+    <!-- Highlights on flame top -->
+    <path d="M21 15l1.5,-2l1.5,2" 
+          stroke="url(#flameHighlight)" stroke-width="0.7" stroke-opacity="0.2" stroke-linecap="round" fill="none" />
   </g>
 </svg>
