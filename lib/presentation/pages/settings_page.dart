@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../application/feedback_service.dart';
 import '../blocs/theme/theme.dart';
 import '../blocs/settings/settings.dart';
-import 'game_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -127,361 +126,329 @@ class SettingsPage extends StatelessWidget {
                       },
                     ),
 
-                    const Divider(),
-
-                    // Redesigned chess pieces
-                    BlocBuilder<ThemeBloc, ThemeState>(
-                      buildWhen:
-                          (previous, current) =>
-                              previous.useRedesignedPieces !=
-                              current.useRedesignedPieces,
-                      builder: (context, themeState) {
-                        return ListTile(
-                          title: const Text('Redesigned Chess Pieces'),
-                          subtitle: const Text(
-                            'Use modern piece designs with 3D effects',
-                          ),
-                          leading: Icon(
-                            Icons.style,
-                            color: colorScheme.primary,
-                          ),
-                          trailing: Switch(
-                            value: themeState.useRedesignedPieces,
-                            onChanged: (value) {
-                              context.read<ThemeBloc>().add(
-                                const RedesignedPiecesToggled(),
-                              );
-                              feedbackService.selectionClick();
-                            },
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const GamePage(),
-                              ),
-                            );
-                            feedbackService.selectionClick();
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Game settings section
-            _buildSectionHeader(context, 'Game Settings'),
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Difficulty
-                    BlocBuilder<SettingsBloc, SettingsState>(
-                      buildWhen:
-                          (previous, current) =>
-                              previous.difficulty != current.difficulty,
-                      builder: (context, settingsState) {
-                        return ListTile(
-                          title: const Text('Difficulty'),
-                          subtitle: Text(
-                            _getDifficultyText(settingsState.difficulty),
-                          ),
-                          leading: Icon(
-                            Icons.psychology,
-                            color: colorScheme.primary,
-                          ),
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                          ),
-                          onTap: () {
-                            _showDifficultyPicker(context);
-                            feedbackService.selectionClick();
-                          },
-                        );
-                      },
-                    ),
-
-                    // Time control
-                    BlocBuilder<SettingsBloc, SettingsState>(
-                      buildWhen:
-                          (previous, current) =>
-                              previous.timeControlEnabled !=
-                                  current.timeControlEnabled ||
-                              previous.timeControlMinutes !=
-                                  current.timeControlMinutes,
-                      builder: (context, settingsState) {
-                        return ListTile(
-                          title: const Text('Time Control'),
-                          subtitle: Text(
-                            settingsState.timeControlEnabled
-                                ? '${settingsState.timeControlMinutes} minutes per player'
-                                : 'Disabled',
-                          ),
-                          leading: Icon(
-                            Icons.timer,
-                            color: colorScheme.primary,
-                          ),
-                          trailing: Switch(
-                            value: settingsState.timeControlEnabled,
-                            onChanged: (value) {
-                              context.read<SettingsBloc>().add(
-                                const TimeControlToggled(),
-                              );
-                              feedbackService.selectionClick();
-                            },
-                          ),
-                          onTap: () {
-                            if (settingsState.timeControlEnabled) {
-                              _showTimeControlPicker(context);
-                              feedbackService.selectionClick();
-                            }
-                          },
-                        );
-                      },
-                    ),
-
-                    // Auto-promote to queen
-                    BlocBuilder<SettingsBloc, SettingsState>(
-                      buildWhen:
-                          (previous, current) =>
-                              previous.autoPromoteToQueen !=
-                              current.autoPromoteToQueen,
-                      builder: (context, settingsState) {
-                        return ListTile(
-                          title: const Text('Auto-Promote to Queen'),
-                          subtitle: const Text(
-                            'Automatically promote pawns to queens',
-                          ),
-                          leading: Icon(
-                            Icons.auto_awesome,
-                            color: colorScheme.primary,
-                          ),
-                          trailing: Switch(
-                            value: settingsState.autoPromoteToQueen,
-                            onChanged: (value) {
-                              context.read<SettingsBloc>().add(
-                                const AutoPromoteToQueenToggled(),
-                              );
-                              feedbackService.selectionClick();
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Feedback settings section
-            _buildSectionHeader(context, 'Feedback Settings'),
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Haptic feedback
-                    BlocBuilder<SettingsBloc, SettingsState>(
-                      buildWhen:
-                          (previous, current) =>
-                              previous.hapticFeedbackEnabled !=
-                              current.hapticFeedbackEnabled,
-                      builder: (context, settingsState) {
-                        return ListTile(
-                          title: const Text('Haptic Feedback'),
-                          subtitle: const Text('Vibration when moving pieces'),
-                          leading: Icon(
-                            Icons.vibration,
-                            color: colorScheme.primary,
-                          ),
-                          trailing: Switch(
-                            value: settingsState.hapticFeedbackEnabled,
-                            onChanged: (value) {
-                              context.read<SettingsBloc>().add(
-                                const HapticFeedbackToggled(),
-                              );
-                              // Still provide feedback for this toggle
-                              if (value) {
-                                feedbackService.selectionClick();
-                              }
-                            },
-                          ),
-                        );
-                      },
-                    ),
-
-                    // Sound effects
-                    BlocBuilder<SettingsBloc, SettingsState>(
-                      buildWhen:
-                          (previous, current) =>
-                              previous.soundEffectsEnabled !=
-                              current.soundEffectsEnabled,
-                      builder: (context, settingsState) {
-                        return ListTile(
-                          title: const Text('Sound Effects'),
-                          subtitle: const Text('Play sounds during the game'),
-                          leading: Icon(
-                            Icons.volume_up,
-                            color: colorScheme.primary,
-                          ),
-                          trailing: Switch(
-                            value: settingsState.soundEffectsEnabled,
-                            onChanged: (value) {
-                              context.read<SettingsBloc>().add(
-                                const SoundEffectsToggled(),
-                              );
-                              feedbackService.selectionClick();
-                            },
-                          ),
-                        );
-                      },
-                    ),
-
-                    // Sound volume
-                    BlocBuilder<SettingsBloc, SettingsState>(
-                      buildWhen:
-                          (previous, current) =>
-                              previous.soundVolume != current.soundVolume ||
-                              previous.soundEffectsEnabled !=
-                                  current.soundEffectsEnabled,
-                      builder: (context, settingsState) {
-                        return ListTile(
-                          title: const Text('Sound Volume'),
-                          subtitle: Slider(
-                            value: settingsState.soundVolume,
-                            min: 0.0,
-                            max: 1.0,
-                            divisions: 10,
-                            label:
-                                '${(settingsState.soundVolume * 100).round()}%',
-                            onChanged:
-                                settingsState.soundEffectsEnabled
-                                    ? (value) {
-                                      context.read<SettingsBloc>().add(
-                                        SoundVolumeChanged(value),
-                                      );
-                                    }
-                                    : null,
-                          ),
-                          leading: Icon(
-                            Icons.volume_down,
-                            color: colorScheme.primary,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Game history settings section
-            _buildSectionHeader(context, 'Game History Settings'),
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Save game history
-                    BlocBuilder<SettingsBloc, SettingsState>(
-                      buildWhen:
-                          (previous, current) =>
-                              previous.saveGameHistory !=
-                              current.saveGameHistory,
-                      builder: (context, settingsState) {
-                        return ListTile(
-                          title: const Text('Save Game History'),
-                          subtitle: const Text('Keep a record of your games'),
-                          leading: Icon(
-                            Icons.history,
-                            color: colorScheme.primary,
-                          ),
-                          trailing: Switch(
-                            value: settingsState.saveGameHistory,
-                            onChanged: (value) {
-                              context.read<SettingsBloc>().add(
-                                const SaveGameHistoryToggled(),
-                              );
-                              feedbackService.selectionClick();
-                            },
-                          ),
-                        );
-                      },
-                    ),
-
-                    // Max saved games
-                    BlocBuilder<SettingsBloc, SettingsState>(
-                      buildWhen:
-                          (previous, current) =>
-                              previous.maxSavedGames != current.maxSavedGames ||
-                              previous.saveGameHistory !=
-                                  current.saveGameHistory,
-                      builder: (context, settingsState) {
-                        return ListTile(
-                          title: const Text('Maximum Saved Games'),
-                          subtitle: Text(
-                            '${settingsState.maxSavedGames} games',
-                          ),
-                          leading: Icon(
-                            Icons.storage,
-                            color: colorScheme.primary,
-                          ),
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                          ),
-                          enabled: settingsState.saveGameHistory,
-                          onTap:
-                              settingsState.saveGameHistory
-                                  ? () {
-                                    _showMaxSavedGamesPicker(context);
+                    // Game settings section
+                    _buildSectionHeader(context, 'Game Settings'),
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Difficulty
+                            BlocBuilder<SettingsBloc, SettingsState>(
+                              buildWhen:
+                                  (previous, current) =>
+                                      previous.difficulty != current.difficulty,
+                              builder: (context, settingsState) {
+                                return ListTile(
+                                  title: const Text('Difficulty'),
+                                  subtitle: Text(
+                                    _getDifficultyText(
+                                      settingsState.difficulty,
+                                    ),
+                                  ),
+                                  leading: Icon(
+                                    Icons.psychology,
+                                    color: colorScheme.primary,
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16,
+                                  ),
+                                  onTap: () {
+                                    _showDifficultyPicker(context);
                                     feedbackService.selectionClick();
-                                  }
-                                  : null,
-                        );
-                      },
+                                  },
+                                );
+                              },
+                            ),
+
+                            // Time control
+                            BlocBuilder<SettingsBloc, SettingsState>(
+                              buildWhen:
+                                  (previous, current) =>
+                                      previous.timeControlEnabled !=
+                                          current.timeControlEnabled ||
+                                      previous.timeControlMinutes !=
+                                          current.timeControlMinutes,
+                              builder: (context, settingsState) {
+                                return ListTile(
+                                  title: const Text('Time Control'),
+                                  subtitle: Text(
+                                    settingsState.timeControlEnabled
+                                        ? '${settingsState.timeControlMinutes} minutes per player'
+                                        : 'Disabled',
+                                  ),
+                                  leading: Icon(
+                                    Icons.timer,
+                                    color: colorScheme.primary,
+                                  ),
+                                  trailing: Switch(
+                                    value: settingsState.timeControlEnabled,
+                                    onChanged: (value) {
+                                      context.read<SettingsBloc>().add(
+                                        const TimeControlToggled(),
+                                      );
+                                      feedbackService.selectionClick();
+                                    },
+                                  ),
+                                  onTap: () {
+                                    if (settingsState.timeControlEnabled) {
+                                      _showTimeControlPicker(context);
+                                      feedbackService.selectionClick();
+                                    }
+                                  },
+                                );
+                              },
+                            ),
+
+                            // Auto-promote to queen
+                            BlocBuilder<SettingsBloc, SettingsState>(
+                              buildWhen:
+                                  (previous, current) =>
+                                      previous.autoPromoteToQueen !=
+                                      current.autoPromoteToQueen,
+                              builder: (context, settingsState) {
+                                return ListTile(
+                                  title: const Text('Auto-Promote to Queen'),
+                                  subtitle: const Text(
+                                    'Automatically promote pawns to queens',
+                                  ),
+                                  leading: Icon(
+                                    Icons.auto_awesome,
+                                    color: colorScheme.primary,
+                                  ),
+                                  trailing: Switch(
+                                    value: settingsState.autoPromoteToQueen,
+                                    onChanged: (value) {
+                                      context.read<SettingsBloc>().add(
+                                        const AutoPromoteToQueenToggled(),
+                                      );
+                                      feedbackService.selectionClick();
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Feedback settings section
+                    _buildSectionHeader(context, 'Feedback Settings'),
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Haptic feedback
+                            BlocBuilder<SettingsBloc, SettingsState>(
+                              buildWhen:
+                                  (previous, current) =>
+                                      previous.hapticFeedbackEnabled !=
+                                      current.hapticFeedbackEnabled,
+                              builder: (context, settingsState) {
+                                return ListTile(
+                                  title: const Text('Haptic Feedback'),
+                                  subtitle: const Text(
+                                    'Vibration when moving pieces',
+                                  ),
+                                  leading: Icon(
+                                    Icons.vibration,
+                                    color: colorScheme.primary,
+                                  ),
+                                  trailing: Switch(
+                                    value: settingsState.hapticFeedbackEnabled,
+                                    onChanged: (value) {
+                                      context.read<SettingsBloc>().add(
+                                        const HapticFeedbackToggled(),
+                                      );
+                                      // Still provide feedback for this toggle
+                                      if (value) {
+                                        feedbackService.selectionClick();
+                                      }
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // Sound effects
+                            BlocBuilder<SettingsBloc, SettingsState>(
+                              buildWhen:
+                                  (previous, current) =>
+                                      previous.soundEffectsEnabled !=
+                                      current.soundEffectsEnabled,
+                              builder: (context, settingsState) {
+                                return ListTile(
+                                  title: const Text('Sound Effects'),
+                                  subtitle: const Text(
+                                    'Play sounds during the game',
+                                  ),
+                                  leading: Icon(
+                                    Icons.volume_up,
+                                    color: colorScheme.primary,
+                                  ),
+                                  trailing: Switch(
+                                    value: settingsState.soundEffectsEnabled,
+                                    onChanged: (value) {
+                                      context.read<SettingsBloc>().add(
+                                        const SoundEffectsToggled(),
+                                      );
+                                      feedbackService.selectionClick();
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // Sound volume
+                            BlocBuilder<SettingsBloc, SettingsState>(
+                              buildWhen:
+                                  (previous, current) =>
+                                      previous.soundVolume !=
+                                          current.soundVolume ||
+                                      previous.soundEffectsEnabled !=
+                                          current.soundEffectsEnabled,
+                              builder: (context, settingsState) {
+                                return ListTile(
+                                  title: const Text('Sound Volume'),
+                                  subtitle: Slider(
+                                    value: settingsState.soundVolume,
+                                    min: 0.0,
+                                    max: 1.0,
+                                    divisions: 10,
+                                    label:
+                                        '${(settingsState.soundVolume * 100).round()}%',
+                                    onChanged:
+                                        settingsState.soundEffectsEnabled
+                                            ? (value) {
+                                              context.read<SettingsBloc>().add(
+                                                SoundVolumeChanged(value),
+                                              );
+                                            }
+                                            : null,
+                                  ),
+                                  leading: Icon(
+                                    Icons.volume_down,
+                                    color: colorScheme.primary,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Game history settings section
+                    _buildSectionHeader(context, 'Game History Settings'),
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Save game history
+                            BlocBuilder<SettingsBloc, SettingsState>(
+                              buildWhen:
+                                  (previous, current) =>
+                                      previous.saveGameHistory !=
+                                      current.saveGameHistory,
+                              builder: (context, settingsState) {
+                                return ListTile(
+                                  title: const Text('Save Game History'),
+                                  subtitle: const Text(
+                                    'Keep a record of your games',
+                                  ),
+                                  leading: Icon(
+                                    Icons.history,
+                                    color: colorScheme.primary,
+                                  ),
+                                  trailing: Switch(
+                                    value: settingsState.saveGameHistory,
+                                    onChanged: (value) {
+                                      context.read<SettingsBloc>().add(
+                                        const SaveGameHistoryToggled(),
+                                      );
+                                      feedbackService.selectionClick();
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // Max saved games
+                            BlocBuilder<SettingsBloc, SettingsState>(
+                              buildWhen:
+                                  (previous, current) =>
+                                      previous.maxSavedGames !=
+                                          current.maxSavedGames ||
+                                      previous.saveGameHistory !=
+                                          current.saveGameHistory,
+                              builder: (context, settingsState) {
+                                return ListTile(
+                                  title: const Text('Maximum Saved Games'),
+                                  subtitle: Text(
+                                    '${settingsState.maxSavedGames} games',
+                                  ),
+                                  leading: Icon(
+                                    Icons.storage,
+                                    color: colorScheme.primary,
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16,
+                                  ),
+                                  enabled: settingsState.saveGameHistory,
+                                  onTap:
+                                      settingsState.saveGameHistory
+                                          ? () {
+                                            _showMaxSavedGamesPicker(context);
+                                            feedbackService.selectionClick();
+                                          }
+                                          : null,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Reset settings button
+                    Center(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.restore),
+                        label: const Text('Reset All Settings'),
+                        onPressed: () {
+                          _showResetConfirmation(context);
+                          feedbackService.selectionClick();
+                        },
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Reset settings button
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.restore),
-                label: const Text('Reset All Settings'),
-                onPressed: () {
-                  _showResetConfirmation(context);
-                  feedbackService.selectionClick();
-                },
               ),
             ),
           ],
@@ -837,13 +804,6 @@ class SettingsPage extends StatelessWidget {
                 // Enable dynamic colors if disabled
                 if (!themeState.useDynamicColors) {
                   context.read<ThemeBloc>().add(const DynamicColorsToggled());
-                }
-
-                // Disable redesigned pieces if enabled
-                if (themeState.useRedesignedPieces) {
-                  context.read<ThemeBloc>().add(
-                    const RedesignedPiecesToggled(),
-                  );
                 }
 
                 // Set light theme if currently dark

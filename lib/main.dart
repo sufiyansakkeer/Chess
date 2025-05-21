@@ -6,6 +6,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'application/sound_service.dart';
 import 'application/game_state_manager.dart';
 import 'presentation/pages/game_page.dart';
+import 'presentation/pages/settings_page.dart';
 import 'presentation/blocs/blocs.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -42,9 +43,6 @@ void main() async {
         BlocProvider<GameBloc>(
           create: (context) => GameBloc(GameStateManager()),
         ),
-        BlocProvider<GamePresenterBloc>(
-          create: (context) => GamePresenterBloc(GameStateManager()),
-        ),
       ],
       child: const ChessApp(),
     ),
@@ -80,6 +78,7 @@ class ChessApp extends StatelessWidget {
               ),
               themeMode: themeState.themeMode,
               home: const GamePage(),
+              routes: {'/settings': (context) => const SettingsPage()},
             );
           },
         );

@@ -10,7 +10,6 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     on<ThemeToggled>(_onThemeToggled);
     on<ThemeStyleChanged>(_onThemeStyleChanged);
     on<DynamicColorsToggled>(_onDynamicColorsToggled);
-    on<RedesignedPiecesToggled>(_onRedesignedPiecesToggled);
     on<ThemeLoaded>(_onThemeLoaded);
 
     // Load theme settings when the bloc is created
@@ -28,14 +27,12 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     final themeMode = prefs.getString('themeMode') ?? 'light';
     final themeStyle = prefs.getString('themeStyle') ?? 'classic';
     final useDynamicColors = prefs.getBool('useDynamicColors') ?? true;
-    final useRedesignedPieces = prefs.getBool('useRedesignedPieces') ?? false;
 
     emit(
       state.copyWith(
         themeMode: themeMode == 'dark' ? ThemeMode.dark : ThemeMode.light,
         themeStyle: themeStyle,
         useDynamicColors: useDynamicColors,
-        useRedesignedPieces: useRedesignedPieces,
       ),
     );
   }
@@ -51,7 +48,6 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     );
     await prefs.setString('themeStyle', state.themeStyle);
     await prefs.setBool('useDynamicColors', state.useDynamicColors);
-    await prefs.setBool('useRedesignedPieces', state.useRedesignedPieces);
   }
 
   /// Handle theme toggle event
@@ -74,15 +70,6 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     Emitter<ThemeState> emit,
   ) {
     emit(state.copyWith(useDynamicColors: !state.useDynamicColors));
-    _saveSettings();
-  }
-
-  /// Handle redesigned pieces toggle event
-  void _onRedesignedPiecesToggled(
-    RedesignedPiecesToggled event,
-    Emitter<ThemeState> emit,
-  ) {
-    emit(state.copyWith(useRedesignedPieces: !state.useRedesignedPieces));
     _saveSettings();
   }
 
@@ -286,7 +273,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
           color: colorScheme.onSurface,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,

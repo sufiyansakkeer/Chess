@@ -13,7 +13,7 @@ class ChessBoard extends StatelessWidget {
     final feedbackService = FeedbackService();
     final colorScheme = Theme.of(context).colorScheme;
 
-    return BlocBuilder<GamePresenterBloc, GamePresenterState>(
+    return BlocBuilder<GameBloc, GameState>(
       builder: (context, state) {
         return AspectRatio(
           aspectRatio: 1,
@@ -61,9 +61,7 @@ class ChessBoard extends StatelessWidget {
               return GestureDetector(
                 onTap: () {
                   // Handle square tap
-                  context.read<GamePresenterBloc>().add(
-                    SelectPosition(context: context, position: position),
-                  );
+                  context.read<GameBloc>().add(PositionSelected(position));
 
                   // Provide haptic feedback
                   if (piece != null) {

@@ -1,3 +1,8 @@
 {
-    "CodeGPT.apiKey": "Github Copilot"
+    "CodeGPT.apiKey": "Github Copilot",
+    "cSpell.words": [
+        "Raleway",
+        "Roboto"
+    ],
+    "codium.codeCompletion.enable": false
 }

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../domain/entities/piece_entity.dart';
 import '../../domain/value_objects/piece_color.dart';
 import '../../domain/value_objects/piece_type.dart';
-import '../blocs/theme/theme.dart';
 
 /// A chess piece widget that uses the new piece designs
 /// with a special case for the white queen (using the crown design)
@@ -37,80 +35,66 @@ class SwitchableChessPiece extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeBloc, ThemeState>(
-      buildWhen:
-          (previous, current) =>
-              previous.useRedesignedPieces != current.useRedesignedPieces,
-      builder: (context, themeState) {
-        // Get the redesigned pieces setting from the ThemeBloc
-        final useRedesignedPieces = themeState.useRedesignedPieces;
-
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(isSelected ? 8 : 0),
-            boxShadow:
-                isSelected || isLastMoved
-                    ? [
-                      BoxShadow(
-                        color:
-                            isSelected
-                                ? Theme.of(
-                                  context,
-                                ).colorScheme.primary.withAlpha(128)
-                                : Theme.of(
-                                  context,
-                                ).colorScheme.secondary.withAlpha(77),
-                        blurRadius: isSelected ? 10 : 5,
-                        spreadRadius: isSelected ? 2 : 1,
-                      ),
-                    ]
+    // No BlocBuilder needed, just use the original assets
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(isSelected ? 8 : 0),
+        boxShadow:
+            isSelected || isLastMoved
+                ? [
+                  BoxShadow(
+                    color:
+                        isSelected
+                            ? Theme.of(
+                              context,
+                            ).colorScheme.primary.withAlpha(128)
+                            : Theme.of(
+                              context,
+                            ).colorScheme.secondary.withAlpha(77),
+                    blurRadius: isSelected ? 10 : 5,
+                    spreadRadius: isSelected ? 2 : 1,
+                  ),
+                ]
+                : null,
+      ),
+      child: AnimatedScale(
+        scale:
+            isSelected
+                ? 1.1
+                : isLastMoved
+                ? 1.05
+                : 1.0,
+        duration: const Duration(milliseconds: 200),
+        child: AnimatedRotation(
+          turns: isSelected ? 0.05 : 0,
+          duration: const Duration(milliseconds: 200),
+          child: SvgPicture.asset(
+            _getPieceAsset(),
+            height: 32,
+            width: 32,
+            colorFilter:
+                _shouldApplyColorFilter()
+                    ? ColorFilter.mode(_getColor(context), BlendMode.srcIn)
                     : null,
           ),
-          child: AnimatedScale(
-            scale:
-                isSelected
-                    ? 1.1
-                    : isLastMoved
-                    ? 1.05
-                    : 1.0,
-            duration: const Duration(milliseconds: 200),
-            child: AnimatedRotation(
-              turns: isSelected ? 0.05 : 0,
-              duration: const Duration(milliseconds: 200),
-              child: SvgPicture.asset(
-                _getPieceAsset(useRedesignedPieces),
-                height: 32,
-                width: 32,
-                colorFilter:
-                    _shouldApplyColorFilter(useRedesignedPieces)
-                        ? ColorFilter.mode(_getColor(context), BlendMode.srcIn)
-                        : null,
-              ),
-            ),
-          ),
-        );
-      },
+        ),
+      ),
     );
   }
 
   /// Determines if color filter should be applied
-  bool _shouldApplyColorFilter(bool useRedesignedPieces) {
+  bool _shouldApplyColorFilter() {
     // Don't apply color filter to the crown queen
     if (piece.color == PieceColor.white && piece.type == PieceType.queen) {
       return false;
     }
-
-    // Don't apply color filter to the new piece designs
     return false;
   }
 
-  String _getPieceAsset(bool useRedesignedPieces) {
+  String _getPieceAsset() {
     final color = piece.color == PieceColor.white ? 'white' : 'black';
-
-    // Use the tribal-style piece designs for all other pieces
-    // Return the appropriate asset based on piece type
     if (piece.type == PieceType.king) {
       return 'assets/${color}_king.svg';
     } else if (piece.type == PieceType.queen) {

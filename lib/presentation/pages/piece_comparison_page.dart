@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/theme/theme.dart';
 
 class PieceComparisonPage extends StatelessWidget {
   const PieceComparisonPage({super.key});
@@ -66,53 +64,6 @@ class PieceComparisonPage extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // Toggle redesigned pieces
-            BlocBuilder<ThemeBloc, ThemeState>(
-              buildWhen:
-                  (previous, current) =>
-                      previous.useRedesignedPieces !=
-                      current.useRedesignedPieces,
-              builder: (context, themeState) {
-                return Card(
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Use Redesigned Pieces',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Toggle to use the redesigned pieces in the game',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 16),
-                        SwitchListTile(
-                          title: const Text('Enable Redesigned Pieces'),
-                          subtitle: Text(
-                            themeState.useRedesignedPieces
-                                ? 'Using redesigned pieces'
-                                : 'Using original pieces',
-                          ),
-                          value: themeState.useRedesignedPieces,
-                          onChanged: (value) {
-                            context.read<ThemeBloc>().add(
-                              const RedesignedPiecesToggled(),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 32),
-
             // Complete set preview
             Text(
               'Complete Set Preview',
@@ -131,16 +82,7 @@ class PieceComparisonPage extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 16),
-                    _buildPieceSet(context, false),
-
-                    const Divider(height: 32),
-
-                    Text(
-                      'Redesigned Set (Examples)',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildPieceSet(context, true),
+                    _buildPieceSet(context),
                   ],
                 ),
               ),
@@ -206,7 +148,7 @@ class PieceComparisonPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPieceSet(BuildContext context, bool redesigned) {
+  Widget _buildPieceSet(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final colors = ['white', 'black'];
     final pieceTypes = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king'];
@@ -228,9 +170,7 @@ class PieceComparisonPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SvgPicture.asset(
-                      redesigned && _hasRedesignedAsset(color, type)
-                          ? 'assets/${color}_${type}_redesigned.svg'
-                          : 'assets/${color}_$type.svg',
+                      'assets/${color}_$type.svg',
                       width: 40,
                       height: 40,
                     ),
@@ -242,12 +182,5 @@ class PieceComparisonPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  bool _hasRedesignedAsset(String color, String type) {
-    // This is a helper method to check if a redesigned asset exists
-    // In a real app, you might want to check if the file exists
-    // For now, we'll assume all pieces have redesigned versions
-    return true;
   }
 }

@@ -28,11 +28,6 @@ class DynamicColorsToggled extends ThemeEvent {
   const DynamicColorsToggled();
 }
 
-/// Event to toggle redesigned pieces
-class RedesignedPiecesToggled extends ThemeEvent {
-  const RedesignedPiecesToggled();
-}
-
 /// Event to load theme settings from storage
 class ThemeLoaded extends ThemeEvent {
   const ThemeLoaded();

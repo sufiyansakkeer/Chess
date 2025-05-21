@@ -20,7 +20,7 @@ class GamePageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chess Game'),
@@ -28,10 +28,17 @@ class GamePageContent extends StatelessWidget {
         scrolledUnderElevation: 2,
         actions: [
           IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Settings',
+            onPressed: () {
+              Navigator.of(context).pushNamed('/settings');
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Reset Game',
             onPressed: () {
-              context.read<GamePresenterBloc>().add(const ResetGame());
+              context.read<GameBloc>().add(GameReset());
             },
           ),
           BlocBuilder<ThemeBloc, ThemeState>(
@@ -63,10 +70,10 @@ class GamePageContent extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Game status with animation
-                    BlocBuilder<GamePresenterBloc, GamePresenterState>(
+                    BlocBuilder<GameBloc, GameState>(
                       builder: (context, state) {
                         Widget statusWidget;
-                        
+
                         if (state.isGameOver) {
                           statusWidget = Card(
                             key: const ValueKey('game-over'),
@@ -115,7 +122,7 @@ class GamePageContent extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     // Current turn indicator
-                    BlocBuilder<GamePresenterBloc, GamePresenterState>(
+                    BlocBuilder<GameBloc, GameState>(
                       builder: (context, state) {
                         return Card(
                           color: colorScheme.primaryContainer,
